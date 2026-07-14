@@ -1,0 +1,6 @@
+# Optional: index this image on https://artifacthub.io/
+# Fill in your own Repository ID and owner details, or delete this file.
+repositoryID: my-custom-id-here
+owners:
+  - name: Jon Marcum
+    email: jrmarcum.se@gmail.com
