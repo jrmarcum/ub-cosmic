@@ -24,8 +24,8 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 | --- | --- |
 | `Containerfile` | Entry point. Parametrized `ARG BASE_IMAGE` / `ARG IMAGE_VARIANT` so CI builds both GPU variants; runs the build script, `bootc container lint`. |
 | `build_files/build.sh` | All package installs / customizations. Installs `cosmic-desktop` + COSMIC apps; keeps GDM; installs + enables **greenboot** auto-rollback; enables the **first-boot GPU auto-rebase** service on the AMD/Intel variant only. |
-| `system_files/` | Tree copied to `/` during build. Holds the titanoboa ISO contract (`usr/lib/bootc-image-builder/iso.yaml`), the greenboot check, the GPU auto-rebase service + script, the **layout switcher** (`usr/bin/ub-cosmic-layout`), **12 layout presets** (`usr/share/ub-cosmic/layouts/*.dconf`), and the **dconf default** (`etc/dconf/profile/user`, `etc/dconf/db/local.d/`). |
-| `LAYOUTS.md` | Guide to the 12 Zorin-style GNOME desktop layouts + the switcher/capture workflow. |
+| `system_files/` | Tree copied to `/` during build. Holds the titanoboa ISO contract (`usr/lib/bootc-image-builder/iso.yaml`), the greenboot check, the GPU auto-rebase service + script, the **COSMIC layout switcher** (`usr/bin/ub-cosmic-layout`), and **COSMIC layout presets** (`usr/share/ub-cosmic/cosmic-layouts/<name>/`, captured from live sessions). |
+| `LAYOUTS.md` | Guide to the COSMIC desktop layouts + the capture workflow. |
 | `image-template.env` | Build vars (`IMAGE_NAME=ub-cosmic`, `REPO_ORGANIZATION=jrmarcum`). Sourced by the Justfile. |
 | `.github/workflows/build.yml` | Builds, signs (Cosign), and pushes the OCI image to GHCR. |
 | `.github/workflows/build-iso.yml` | Builds the live ISO via titanoboa; uploads ISO + checksum as artifacts. |
@@ -49,9 +49,10 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 - **NVIDIA handled via two images + one ISO + first-boot auto-rebase** (commit `923ab8e`): a CI matrix
   builds `ub-cosmic` (AMD/Intel) and `ub-cosmic-nvidia` (nvidia-open); the single ISO installs the
   AMD/Intel image, which rebases NVIDIA machines on first boot. See [decisions.md](decisions.md).
-- **12 Zorin-style GNOME desktop layouts** (Windows-11 default) via `ub-cosmic-layout` switcher +
-  dconf presets. Framework complete; **presets are DRAFT pending a live-VM tuning pass**. Runs on
-  GNOME (COSMIC can't). See [decisions.md](decisions.md) and LAYOUTS.md.
+- **COSMIC desktop layouts** (Windows-like default) via `ub-cosmic-layout` file-tree switcher.
+  Framework complete; **preset content must be captured on a live COSMIC session** (empty until then).
+  ~4–6 approximations, not 12 (COSMIC limits). Earlier GNOME-based version was removed. See
+  [decisions.md](decisions.md) and LAYOUTS.md.
 - **Not yet done** (see [next-work.md](next-work.md)): create + add the Cosign `SIGNING_SECRET`,
   confirm Actions are enabled, run the (matrix) image build, then run the titanoboa ISO build. No
   image or ISO has been built/published yet.

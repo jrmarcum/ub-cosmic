@@ -1,117 +1,116 @@
 #!/usr/bin/bash
-# ub-cosmic-layout — switch the GNOME session between Zorin-style desktop layouts.
+# ub-cosmic-layout — switch the COSMIC desktop between preset layouts.
 #
-# Layouts are dconf keyfiles in /usr/share/ub-cosmic/layouts/<name>.dconf (system)
-# and ~/.config/ub-cosmic/layouts/<name>.dconf (user overrides / captures).
-# Applying a layout resets the relevant dconf subtrees, then loads the preset.
+# A "layout" is a snapshot of the cosmic-config directories that define the
+# panel/dock/theme/background/compositor. This tool copies those directories in
+# and out of ~/.config/cosmic — it never parses RON, so presets are built by
+# CAPTURING a hand-tuned live COSMIC session (see LAYOUTS.md).
+#
+#   System presets: /usr/share/ub-cosmic/cosmic-layouts/<name>/
+#   User presets:   ~/.config/ub-cosmic/cosmic-layouts/<name>/   (captures / overrides)
 #
 # Usage:
 #   ub-cosmic-layout list                 # list available layouts
 #   ub-cosmic-layout current              # show the active layout (if known)
 #   ub-cosmic-layout set <name>           # apply a layout (log out/in to finish)
-#   ub-cosmic-layout reset                # clear layout-related dconf to GNOME stock
-#   ub-cosmic-layout capture <name>       # save the CURRENT desktop as a preset
+#   ub-cosmic-layout capture <name>       # save the CURRENT COSMIC desktop as a preset
+#   ub-cosmic-layout reset                # remove layout config (COSMIC regenerates defaults)
 #
-# NOTE: On Wayland, GNOME Shell can't hot-reload extensions — after `set`, log out
-# and back in (or reboot) for the layout to fully apply.
+# NOTE: COSMIC applies most config live, but panel/dock structure changes are
+# safest after a LOG OUT / LOG IN.
 set -uo pipefail
 
-SYS_DIR="/usr/share/ub-cosmic/layouts"
-USER_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/ub-cosmic/layouts"
-STATE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/ub-cosmic/current-layout"
+CFG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+COSMIC_CFG="${CFG_HOME}/cosmic"
+SYS_DIR="/usr/share/ub-cosmic/cosmic-layouts"
+USER_DIR="${CFG_HOME}/ub-cosmic/cosmic-layouts"
+STATE_FILE="${CFG_HOME}/ub-cosmic/current-layout"
 
-# dconf subtrees a layout owns. `set`/`reset` clear these before applying so
-# switching layouts doesn't leave stale keys from the previous one.
-OWNED_PATHS=(
-    /org/gnome/shell/extensions/dash-to-panel/
-    /org/gnome/shell/extensions/dash-to-dock/
-    /org/gnome/shell/extensions/arcmenu/
-)
-# Individual keys (not whole subtrees) a layout sets.
-OWNED_KEYS=(
-    /org/gnome/shell/enabled-extensions
-    /org/gnome/shell/favorite-apps
-    /org/gnome/desktop/interface/color-scheme
-    /org/gnome/desktop/interface/gtk-theme
-    /org/gnome/desktop/wm/preferences/button-layout
+# cosmic-config entries that make up a "layout". Globs are matched under
+# $COSMIC_CFG; curated so captures don't drag in unrelated app state
+# (CosmicFiles/CosmicTerm/CosmicEdit, etc.). Extend this list if a layout starts
+# depending on another component.
+INCLUDE_GLOBS=(
+    'com.system76.CosmicPanel*'      # panels, dock, entries
+    'com.system76.CosmicComp*'       # compositor: workspaces, tiling, keybinds
+    'com.system76.CosmicTheme*'      # light/dark/mode, accent
+    'com.system76.CosmicBackground*' # wallpaper
+    'com.system76.CosmicTk*'         # toolkit prefs
+    'applets'                        # applet configs
 )
 
 die() { echo "ub-cosmic-layout: $*" >&2; exit 1; }
 
-preset_path() {
-    # User override wins over the system preset.
+preset_dir() {
     local name="$1"
-    if [[ -f "${USER_DIR}/${name}.dconf" ]]; then echo "${USER_DIR}/${name}.dconf"; return 0; fi
-    if [[ -f "${SYS_DIR}/${name}.dconf" ]]; then echo "${SYS_DIR}/${name}.dconf"; return 0; fi
+    if [[ -d "${USER_DIR}/${name}" ]]; then echo "${USER_DIR}/${name}"; return 0; fi
+    if [[ -d "${SYS_DIR}/${name}" ]]; then echo "${SYS_DIR}/${name}"; return 0; fi
     return 1
 }
 
 cmd_list() {
     echo "Available layouts:"
-    { [[ -d "$SYS_DIR" ]] && ls "$SYS_DIR"/*.dconf 2>/dev/null
-      [[ -d "$USER_DIR" ]] && ls "$USER_DIR"/*.dconf 2>/dev/null; } \
-        | xargs -r -n1 basename 2>/dev/null | sed 's/\.dconf$//' | sort -u \
-        | sed 's/^/  /'
+    { [[ -d "$SYS_DIR" ]] && find "$SYS_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n'
+      [[ -d "$USER_DIR" ]] && find "$USER_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n'; } \
+        2>/dev/null | sort -u | sed 's/^/  /'
     [[ -f "$STATE_FILE" ]] && echo "Current: $(cat "$STATE_FILE")"
 }
 
 cmd_current() { [[ -f "$STATE_FILE" ]] && cat "$STATE_FILE" || echo "unknown"; }
 
-cmd_reset() {
-    for p in "${OWNED_PATHS[@]}"; do dconf reset -f "$p"; done
-    for k in "${OWNED_KEYS[@]}"; do dconf reset "$k"; done
-    echo "Reset layout-related settings to GNOME defaults. Log out/in to apply."
-}
-
 cmd_set() {
     local name="${1:-}"; [[ -n "$name" ]] || die "usage: ub-cosmic-layout set <name>"
-    local file; file="$(preset_path "$name")" || die "unknown layout '$name' (try: ub-cosmic-layout list)"
-    # Clear the previous layout's keys, then load the new preset.
-    for p in "${OWNED_PATHS[@]}"; do dconf reset -f "$p"; done
-    for k in "${OWNED_KEYS[@]}"; do dconf reset "$k"; done
-    dconf load / < "$file" || die "failed to load preset $file"
+    local src; src="$(preset_dir "$name")" || die "unknown layout '$name' (try: ub-cosmic-layout list)"
+    [[ -n "$(ls -A "$src" 2>/dev/null)" ]] || die "layout '$name' has no content yet — capture it on a live session first"
+    mkdir -p "$COSMIC_CFG"
+    # Replace each component the preset carries; leave unrelated COSMIC config alone.
+    local entry base
+    for entry in "$src"/*; do
+        [[ -e "$entry" ]] || continue
+        base="$(basename "$entry")"
+        rm -rf "${COSMIC_CFG:?}/${base}"
+        cp -a "$entry" "$COSMIC_CFG/"
+    done
     mkdir -p "$(dirname "$STATE_FILE")"; echo "$name" > "$STATE_FILE"
-    echo "Applied layout '$name'. Log out and back in (or reboot) to finish."
+    echo "Applied layout '$name'. Log out and back in to fully apply."
 }
 
 cmd_capture() {
     local name="${1:-}"; [[ -n "$name" ]] || die "usage: ub-cosmic-layout capture <name>"
-    mkdir -p "$USER_DIR"
-    local out="${USER_DIR}/${name}.dconf"
-    {
-        echo "# ub-cosmic layout '${name}' captured from a live session."
-        # Dump each owned subtree, re-prefixing section headers to absolute paths
-        # so the file can be applied with `dconf load /`.
-        for p in "${OWNED_PATHS[@]}"; do
-            local base="${p#/}"; base="${base%/}"           # e.g. org/gnome/shell/extensions/dash-to-panel
-            dconf dump "$p" 2>/dev/null | awk -v b="$base" '
-                /^\[/ {
-                    s = substr($0, 2, length($0)-2)         # strip [ ]
-                    if (s == "/") printf("[%s]\n", b); else printf("[%s/%s]\n", b, s); next
-                }
-                { print }'
+    [[ -d "$COSMIC_CFG" ]] || die "no COSMIC config found at $COSMIC_CFG (are you in a COSMIC session?)"
+    local dest="${USER_DIR}/${name}"
+    rm -rf "$dest"; mkdir -p "$dest"
+    shopt -s nullglob
+    local pat entry got=0
+    for pat in "${INCLUDE_GLOBS[@]}"; do
+        for entry in "$COSMIC_CFG"/$pat; do
+            [[ -e "$entry" ]] && { cp -a "$entry" "$dest/"; got=1; }
         done
-        # Individual keys → group them under their parent sections.
-        echo "[org/gnome/shell]"
-        for key in enabled-extensions favorite-apps; do
-            v="$(dconf read "/org/gnome/shell/${key}")"; [[ -n "$v" ]] && echo "${key}=${v}"
-        done
-        echo "[org/gnome/desktop/interface]"
-        for key in color-scheme gtk-theme; do
-            v="$(dconf read "/org/gnome/desktop/interface/${key}")"; [[ -n "$v" ]] && echo "${key}=${v}"
-        done
-        v="$(dconf read /org/gnome/desktop/wm/preferences/button-layout)"
-        [[ -n "$v" ]] && { echo "[org/gnome/desktop/wm/preferences]"; echo "button-layout=${v}"; }
-    } > "$out"
-    echo "Captured current desktop to ${out}"
-    echo "Copy it into the repo at system_files${SYS_DIR}/${name}.dconf to ship it as a default."
+    done
+    shopt -u nullglob
+    [[ "$got" -eq 1 ]] || die "captured nothing — no matching cosmic-config components found"
+    echo "Captured current COSMIC desktop to ${dest}"
+    echo "To ship it as a default, copy it into the repo at:"
+    echo "  system_files${SYS_DIR}/${name}/"
+    echo "(and set DEFAULT_LAYOUT in build.sh if this should be the baked default)."
+}
+
+cmd_reset() {
+    shopt -s nullglob
+    local pat entry
+    for pat in "${INCLUDE_GLOBS[@]}"; do
+        for entry in "$COSMIC_CFG"/$pat; do rm -rf "$entry"; done
+    done
+    shopt -u nullglob
+    rm -f "$STATE_FILE"
+    echo "Removed layout config. Log out/in — COSMIC will regenerate its defaults."
 }
 
 case "${1:-}" in
     list)    cmd_list ;;
     current) cmd_current ;;
     set)     cmd_set "${2:-}" ;;
-    reset)   cmd_reset ;;
     capture) cmd_capture "${2:-}" ;;
-    *) echo "usage: ub-cosmic-layout {list|current|set <name>|reset|capture <name>}" >&2; exit 2 ;;
+    reset)   cmd_reset ;;
+    *) echo "usage: ub-cosmic-layout {list|current|set <name>|capture <name>|reset}" >&2; exit 2 ;;
 esac

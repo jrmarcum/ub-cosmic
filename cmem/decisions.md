@@ -70,32 +70,32 @@ should roll back automatically, not require manual GRUB/`bootc rollback`. So `bu
 This is inherited-base behavior we deliberately turn ON; plain Bazzite ships rollback as *manual*
 only. Applies to every ub-cosmic variant (incl. any future nvidia variant).
 
-## Zorin-style desktop layouts live on GNOME, not COSMIC (owner decision 2026-07-13)
+## Desktop layouts are COSMIC-native (owner decision 2026-07-13, revised same day)
 
-Owner wants Zorin OS Pro's 12 desktop layouts approximated, with **Windows-11-like as the default**,
-for non-technical Windows migrants. Findings + decisions:
+Owner wants Zorin-style desktop layouts, defaulting to **Windows-like**, for non-technical Windows
+migrants — **on the COSMIC session** (the primary desktop), NOT GNOME.
 
-- **Zorin's 12 layouts are a GNOME capability** (dash-to-panel + ArcMenu + dash-to-dock + theming).
-  **COSMIC cannot reproduce them** — no extension ecosystem, applets aren't configurable, can't
-  ungroup taskbar windows, no start-menu equivalent, no layout switcher (upstream request #746).
-  Verified 2026-07-13. So the layout suite is built on the **GNOME session**; COSMIC stays installed
-  and selectable but does NOT host layouts.
-- **Implemented:** `ub-cosmic-layout` switcher (`usr/bin/`, subcommands list/set/current/reset/
-  **capture**), 12 preset dconf keyfiles (`usr/share/ub-cosmic/layouts/*.dconf`), extension stack in
-  build.sh (`dash-to-panel`, `dash-to-dock`, `appindicator`, `user-theme`, `gnome-tweaks`,
-  `gnome-menus`), and Windows-11 baked as a **system-wide dconf default** via
-  `etc/dconf/db/local.d/00-ub-cosmic-windows-11` + `etc/dconf/profile/user`.
-- **ArcMenu is NOT in Fedora repos** — build.sh fetches it from GitHub best-effort, **guarded so it
-  never fails the build**; without it, Windows layouts fall back to dash-to-panel's app grid. The
-  release URL must be pinned to a GNOME-Shell-compatible version.
-- **Presets are DRAFT** — written without a live session; they give the right general shape but need a
-  tuning pass on a booted GNOME VM via the `capture` workflow (see [next-work.md](next-work.md) and
-  LAYOUTS.md). Do NOT present them as finished.
-- **OPEN — default *session* vs default *layout*:** Windows-11 is the default *layout within GNOME*.
-  For users to actually land in it, GNOME must be the default *session* — not yet wired (GDM default-
-  session is fiddly). Tracked in [next-work.md](next-work.md). Don't silently flip the session default.
-- **Legal/ethics:** we build our own presets with open tools; we do NOT copy Zorin's proprietary
-  assets, artwork, or the Zorin Appearance code.
+- **History:** a first version was built on GNOME (dash-to-panel/ArcMenu/dconf) because that's the only
+  way to get all 12 Zorin layouts faithfully. Owner then clarified it must be COSMIC. The **GNOME
+  layout machinery was removed** (extension installs, 12 dconf presets, dconf profile/db, dconf-based
+  switcher) — see git history around this date if it's ever wanted back.
+- **COSMIC reality (verified 2026-07-13):** COSMIC has no extension ecosystem, no start menu, can't
+  ungroup taskbar windows, applets aren't configurable, no upstream layout switcher (request #746). So
+  layouts are limited to rearranging the COSMIC **panel + dock + applets + theme** → **~4–6 distinct
+  approximations, not 12**. Set expectations accordingly; do NOT promise faithful Zorin parity.
+- **Design — file-tree switcher (no RON authoring):** a "layout" is a snapshot of the cosmic-config
+  dirs (`com.system76.CosmicPanel*`, `CosmicComp*`, `CosmicTheme*`, `CosmicBackground*`, `CosmicTk*`,
+  `applets`). `ub-cosmic-layout` (`usr/bin/`) copies these in/out of `~/.config/cosmic` — subcommands
+  list/set/current/**capture**/reset. cosmic-config RON is versioned/structural and **cannot be
+  authored blind**, so presets are CAPTURED from a hand-tuned live COSMIC session.
+- **Presets:** live in `usr/share/ub-cosmic/cosmic-layouts/<name>/`; **content is empty until captured
+  on a VM.** `build.sh` bakes the `windows` (default) preset into `/usr/share/cosmic` as the system
+  default — but only once it has captured content (guarded no-op otherwise, so builds never ship an
+  empty default).
+- **OPEN — default session:** COSMIC should be the default session so users land in the Windows
+  layout; GDM default-session wiring is still open (see [next-work.md](next-work.md)). Don't flip
+  silently.
+- **Legal/ethics:** our own presets with open tools; do NOT copy Zorin's proprietary assets/code.
 
 ## NVIDIA vs AMD/Intel: two images, one ISO, first-boot auto-rebase (owner decision 2026-07-13)
 

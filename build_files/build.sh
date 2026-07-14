@@ -91,52 +91,26 @@ else
     echo "ub-cosmic: NVIDIA variant — GPU auto-rebase service left disabled."
 fi
 
-### GNOME desktop layouts (Zorin-style) ------------------------------------
-# ub-cosmic ships switchable GNOME desktop layouts (see LAYOUTS.md), defaulting
-# to Windows-11-like. Built on packaged GNOME extensions; the layout data lives
-# in /usr/share/ub-cosmic/layouts/ and is applied per-user by `ub-cosmic-layout`.
-# NOTE: these run on the GNOME session (COSMIC has no equivalent extension stack).
-dnf5 install -y \
-    gnome-shell-extension-dash-to-panel \
-    gnome-shell-extension-dash-to-dock \
-    gnome-shell-extension-appindicator \
-    gnome-shell-extension-user-theme \
-    gnome-tweaks \
-    gnome-menus \
-    unzip
-
-# ArcMenu (the Windows-style start menu) is NOT packaged in Fedora, so fetch it
-# from its GitHub release into the system-wide extensions dir. Guarded so a fetch
-# failure NEVER breaks the image build — Windows layouts then fall back to
-# dash-to-panel's built-in app grid. Pin/refresh the URL to match the base's
-# GNOME Shell version; verify on a live VM (see cmem/next-work.md).
-install_arcmenu() {
-    local uuid="arcmenu@arcmenu.com"
-    local dest="/usr/share/gnome-shell/extensions/${uuid}"
-    local url="https://github.com/ArcMenu/ArcMenu/releases/latest/download/${uuid}.zip"
-    local tmp; tmp="$(mktemp -d)"
-    mkdir -p "$dest"
-    if curl -fsSL "$url" -o "$tmp/arcmenu.zip" 2>/dev/null \
-        && unzip -oq "$tmp/arcmenu.zip" -d "$dest" 2>/dev/null; then
-        echo "ub-cosmic: ArcMenu installed system-wide."
-    else
-        echo "ub-cosmic: WARNING — ArcMenu not installed (fetch/unzip failed); Windows layouts use the built-in app grid." >&2
-    fi
-    rm -rf "$tmp"
-    return 0
-}
-install_arcmenu
-
-# Make the layout switcher executable.
+### COSMIC desktop layouts --------------------------------------------------
+# ub-cosmic ships switchable COSMIC desktop-layout presets (see LAYOUTS.md),
+# defaulting to a Windows-like arrangement. A "layout" is a snapshot of the
+# relevant cosmic-config directories; `ub-cosmic-layout` swaps them per user.
+# Preset content is CAPTURED from a live COSMIC session (cosmic-config RON can't
+# be authored blind) — see cmem/next-work.md and LAYOUTS.md.
 chmod +x /usr/bin/ub-cosmic-layout
 
-# Default layout = Windows 11: bake the preset as a SYSTEM-WIDE dconf default so
-# every new user boots into it. Users can switch anytime with
-# `ub-cosmic-layout set <name>` (their choice overrides this default).
-# The dconf profile ships via system_files (/etc/dconf/profile/user).
-install -Dm0644 /usr/share/ub-cosmic/layouts/windows-11.dconf \
-    /etc/dconf/db/local.d/00-ub-cosmic-windows-11
-dconf update
+# Bake the default layout as a COSMIC system default (/usr/share/cosmic), but only
+# once the preset actually has captured content — until then, skip (no-op) so the
+# build never ships an empty/broken default.
+DEFAULT_LAYOUT="windows"
+DEFAULT_SRC="/usr/share/ub-cosmic/cosmic-layouts/${DEFAULT_LAYOUT}"
+if [[ -d "${DEFAULT_SRC}" ]] && [[ -n "$(ls -A "${DEFAULT_SRC}" 2>/dev/null)" ]]; then
+    mkdir -p /usr/share/cosmic
+    cp -a "${DEFAULT_SRC}/." /usr/share/cosmic/
+    echo "ub-cosmic: baked default COSMIC layout '${DEFAULT_LAYOUT}' into /usr/share/cosmic."
+else
+    echo "ub-cosmic: no captured content for default layout '${DEFAULT_LAYOUT}' yet — skipping default bake (capture it on a live COSMIC session)."
+fi
 
 ### Example: extra packages from Fedora / RPMFusion --------------------------
 # RPMFusion is available by default on Universal Blue images.

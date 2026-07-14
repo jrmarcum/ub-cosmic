@@ -29,21 +29,23 @@ implemented (Containerfile args, matrix, rebase service, build.sh gating). See
 - Confirm an AMD/Intel machine stays on `ub-cosmic` (stamp written, no switch).
 - If targeting older NVIDIA GPUs, add/switch the matrix entry to `bazzite-gnome-nvidia`.
 
-## A3. Desktop layouts — tune DRAFT presets on a live VM (raised 2026-07-13)
+## A3. COSMIC desktop layouts — capture preset content on a live session (raised 2026-07-13)
 
-Framework is done (switcher, 12 presets, extension install, Windows-11 dconf default). Remaining,
-all needing a booted GNOME VM:
+Framework is done (COSMIC file-tree switcher, capture, default-bake wiring). Preset content is
+**empty** and must be built on a booted COSMIC session:
 
-- **Tune each of the 12 presets** via `ub-cosmic-layout set <name>` → adjust → `ub-cosmic-layout
-  capture <name>` → copy into `system_files/usr/share/ub-cosmic/layouts/`. Especially verify the
-  `windows-11` centered-taskbar `panel-element-positions` JSON and each ArcMenu `menu-layout` name.
-- **Pin ArcMenu** to a release matching the base's GNOME Shell version (build.sh currently uses
-  `releases/latest`); confirm the GitHub asset name `arcmenu@arcmenu.com.zip` is correct, else the
-  guarded fetch silently no-ops and Windows layouts lose the start menu.
-- **Confirm the packaged extensions load** on the base's GNOME Shell version (version compatibility).
-- **DECIDE default *session*:** to actually land users in the Windows-11 layout, GNOME must be the
-  default session (currently user-selected via GDM). Decide + wire, or accept COSMIC-first with the
-  layout as GNOME's default. Don't flip silently — see [decisions.md](decisions.md).
+- **Capture each intended layout** (`windows` default, `macos`, `ubuntu`, `classic`, `compact`,
+  `touch`): arrange the COSMIC panel/dock/theme by hand → `ub-cosmic-layout capture <name>` → copy
+  `~/.config/ub-cosmic/cosmic-layouts/<name>/` into `system_files/usr/share/ub-cosmic/cosmic-layouts/`.
+- **The `windows` preset feeds the baked default** (`build.sh` copies it into `/usr/share/cosmic`
+  once it has content) — capture that one first.
+- **Verify the switcher's INCLUDE_GLOBS** cover everything a layout needs on the base's COSMIC
+  version (component dir names can drift); confirm apply-on-logout works and nothing unrelated gets
+  clobbered.
+- **DECIDE default *session*:** to actually land users in COSMIC (and the Windows layout), COSMIC
+  should be the default session (currently user-selected via GDM). Decide + wire; don't flip silently.
+- The earlier GNOME layout system was removed (COSMIC-only decision) — recoverable from git history
+  if ever wanted for the GNOME backup session.
 
 ## B. Hardening / polish (after first green build)
 
