@@ -175,3 +175,17 @@ dnf5 install -y gtk2 libpng12
 
 ### Example: enable a systemd unit ------------------------------------------
 # systemctl enable podman.socket
+
+### Cleanup — keep the bootc image lint-clean ------------------------------
+# Removes dnf metadata + scriptlet crumbs so `bootc container lint` doesn't warn
+# (nonempty-run-tmp / var-tmpfiles). Keep this LAST, after all installs.
+dnf5 clean all || true
+rm -rf \
+    /var/lib/dnf/repos \
+    /var/lib/dnf/history.sqlite* \
+    /var/lib/dnf/system-repo.lock \
+    /var/cache/* \
+    /var/log/* \
+    /tmp/* \
+    /run/* \
+    2>/dev/null || true
