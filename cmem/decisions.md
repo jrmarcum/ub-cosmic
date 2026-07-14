@@ -182,11 +182,27 @@ Owner wants BricsCAD to have the best chance of running. Facts + decisions:
   built OS media under a brand (trademarks, OS-image redistribution, BricsCAD-not-bundled). Not
   commercial at this time; the current attribution + disclaimers suffice for open-source use.
 
-## ISO method: titanoboa (live), with BIB as fallback
+## Distribution: REBASE-first, not ISO (owner decision 2026-07-14)
 
-Owner chose the **titanoboa** live-ISO path (matches how upstream Bazzite builds ISOs) over
-bootc-image-builder. BIB config is kept under `disk_config/` for local builds and as a documented
-fallback, but the CI ISO is titanoboa. Titanoboa is experimental — noted in README caveats.
+**End users install Bazzite, then `bootc switch` to the published ub-cosmic image** — no ISO shipped.
+Reason: a full ub-cosmic ISO is ~5–8 GB, and **GitHub Release assets are capped at 2 GiB**, so the
+ISO can't be attached to a Release. The published **GHCR image is the deliverable**; users rebase
+onto it (preserves /home + settings, instant `bootc rollback`; standard for ublue custom images).
+
+- **README** leads with: install Bazzite (bazzite.gg, GNOME desktop) → `bootc switch` → reboot.
+- Rebase also works from Bluefin/Aurora/Fedora Atomic; Bazzite is the closest base.
+- Verified: user data/settings, update behavior, greenboot rollback, and applied COSMIC layouts all
+  survive a rebase/update (image settings come from the image; user settings live in /home). Only
+  desktop-specific display config doesn't translate across a DE switch.
+- **A hosted ISO for fresh/offline installs is a possible future add-on** — would need external
+  storage (Cloudflare R2 / S3) because of the 2 GiB Release limit. Ties into the commercial gate only
+  if branded/sold.
+
+### ISO build workflow: kept but OPTIONAL (titanoboa)
+
+`build-iso.yml` (titanoboa live ISO) is retained for **local testing / a future hosted ISO**, not as
+the user path. Titanoboa was chosen over bootc-image-builder; BIB config stays under `disk_config/`
+for local `just build-iso`. Titanoboa is experimental. Do NOT present the ISO as the install method.
 
 ## Portable memory in `cmem/`
 

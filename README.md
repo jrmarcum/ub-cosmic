@@ -55,19 +55,42 @@ In short: **Fedora → Universal Blue → Bazzite → ub-cosmic, with COSMIC on 
 
 ## Get ub-cosmic
 
-**Fresh install (USB):**
-1. Download the ub-cosmic ISO from the project's Releases / build artifacts.
-2. Write it to a USB stick with [Fedora Media Writer](https://fedoraproject.org/workstation/download),
-   Balena Etcher, or `dd`.
-3. Boot the USB and follow the installer. **One ISO works for both AMD/Intel and NVIDIA** — the right
-   drivers are chosen automatically.
+ub-cosmic is installed by **rebasing** an existing atomic base onto our image. That's the standard,
+robust way Universal Blue custom images are delivered — and a big plus, it **keeps your files and
+settings** and lets you **roll back instantly** if you change your mind.
 
-**Already on a bootc system** (Bazzite, Bluefin, Fedora Atomic…)? Rebase without reinstalling:
+### Step 1 — Install Bazzite (the base)
+
+ub-cosmic is built on **Bazzite**, so start there:
+
+1. Go to **[bazzite.gg](https://bazzite.gg/)** and download the ISO. Choose the **Desktop** image for
+   your hardware — the **GNOME** edition is recommended. (GPU choice isn't critical: ub-cosmic sorts
+   out NVIDIA drivers automatically in step 2.)
+2. Write the ISO to a USB stick with [Fedora Media Writer](https://fedoraproject.org/workstation/download),
+   [Balena Etcher](https://etcher.balena.io/), or `dd`.
+3. Boot the USB and complete the installer. Bazzite's own
+   [installation guide](https://docs.bazzite.gg/General/Installation_Guide/) walks through it.
+
+### Step 2 — Rebase to ub-cosmic
+
+Once you're on the Bazzite desktop, open a terminal and run:
+
 ```bash
 sudo bootc switch ghcr.io/jrmarcum/ub-cosmic:latest
 systemctl reboot
 ```
+
+That's it — on reboot you're running **ub-cosmic**: COSMIC with a GNOME fallback, automatic
+rollback, and (on NVIDIA machines) an automatic switch to the NVIDIA-optimized build on first boot.
 At the login screen, pick **COSMIC** or **GNOME** — your choice is remembered.
+
+- 🔒 **Your data stays put.** Rebasing swaps only the OS image, not your `/home` or apps.
+- ↩️ **Easy undo.** `sudo bootc rollback && systemctl reboot` puts you right back on Bazzite.
+
+> **Why not a one-click ISO?** A full ub-cosmic ISO is ~5–8 GB — larger than GitHub's 2 GiB release
+> limit — so we publish the image and you rebase onto it. (A hosted ISO for fresh/offline installs may
+> come later.) Already on another atomic base — Bluefin, Aurora, Fedora Atomic? You can rebase from
+> there too; Bazzite just gives the closest starting point.
 
 ## Everyday use
 

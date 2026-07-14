@@ -31,15 +31,24 @@ drivers). GDM stays the display manager, so COSMIC and GNOME are both selectable
    > ⚠️ Never commit `cosign.key` — it's in `.gitignore`.
 3. **Enable Actions** on the repo (Actions tab → enable workflows).
 
+## Distribution model: rebase, not ISO
+
+**ub-cosmic is delivered as an image that users rebase onto** (install Bazzite → `bootc switch` to
+ub-cosmic — see the [README](README.md)). We do **not** ship an ISO to end users, because a full
+ub-cosmic ISO is ~5–8 GB and GitHub Release assets are capped at 2 GiB. The published GHCR **image is
+the deliverable**; the ISO workflow below is **optional** (handy for local testing or a future
+externally-hosted ISO, e.g. Cloudflare R2 / S3).
+
 ## Build order
 
 1. **Build & push the images.** Push to `main` (or run *Build container image* manually). The matrix
    publishes both `ub-cosmic` and `ub-cosmic-nvidia`. First run is slow (COSMIC + deps + rechunk).
 2. **Make the GHCR packages public** so machines can pull without auth
    (`github.com/users/jrmarcum/packages` → each package → Package settings → Change visibility).
-3. **Build the ISO.** Run *Build live ISO (titanoboa)* → download the ISO + checksum from the run's
-   **Artifacts**.
-4. **Flash & boot** with Fedora Media Writer / Etcher / `dd`.
+   **This is all users need** — they rebase from Bazzite onto the published image.
+3. *(Optional)* **Build an ISO.** Run *Build live ISO (titanoboa)* → download the ISO + checksum from
+   the run's **Artifacts**. Only needed for fresh/offline installs; would require external hosting to
+   distribute (>2 GiB). Flash with Fedora Media Writer / Etcher / `dd`.
 
 ## Two-image matrix & GPU selection
 

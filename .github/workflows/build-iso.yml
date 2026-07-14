@@ -1,9 +1,14 @@
 ---
 name: Build live ISO (titanoboa)
 
+# OPTIONAL. ub-cosmic is distributed by REBASE (users install Bazzite, then
+# `bootc switch` to the published image) — see README/BUILDING.md. This ISO is NOT
+# the user delivery path: a full ISO is ~5-8 GB, over GitHub's 2 GiB release limit,
+# so it can't be attached to a Release. Keep this workflow for local testing or a
+# future externally-hosted ISO (e.g. Cloudflare R2 / S3). Manual-dispatch only.
+#
 # Builds a live, bootable ISO of the ub-cosmic image using ublue-os/titanoboa.
-# This consumes the image that build.yml already pushed to GHCR, so make sure
-# "Build container image" has succeeded at least once first.
+# Consumes the image build.yml pushed to GHCR, so run "Build container image" first.
 
 on:
   workflow_dispatch:

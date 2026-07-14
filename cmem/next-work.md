@@ -3,19 +3,18 @@
 Prioritized "what to pick up next" list (2026-07-13). INDEX.md/overview.md are authoritative status;
 this is the short next-up list.
 
-## A. Get the first build green (blocking)
+## A. First build — DONE ✅ (2026-07-14)
 
-1. **Create the Cosign key and add `SIGNING_SECRET`** — image builds fail without it. See
-   [build-and-release.md](build-and-release.md) § "Required secret". Commit `cosign.pub` only.
-2. **Confirm GitHub Actions are enabled** on the repo (Actions tab → enable workflows).
-3. **Run *Build container image*** and confirm `ghcr.io/jrmarcum/ub-cosmic:latest` publishes.
-   - First run is slow; COSMIC adds a few hundred MB over Bazzite.
-   - Watch for `dnf5 install cosmic-desktop` / `greenboot` failing if a package name drifted for the
-     base's Fedora release — adjust in `build_files/build.sh`.
-   - Verify the greenboot `systemctl enable` loop didn't error the build; confirm the units are
-     enabled in the built image.
-4. **Run *Build live ISO (titanoboa)*** and download the ISO artifact; boot-test it in a VM.
-   - Sanity-check greenboot: a healthy boot should reach the desktop and clear `boot_counter`.
+- Cosign `SIGNING_SECRET` set, Actions enabled, **matrix build green**: both
+  `ghcr.io/jrmarcum/ub-cosmic:latest` and `…-nvidia:latest` published and **verified PUBLIC**
+  (anonymous pull HTTP 200; tags `latest`, `20260714`).
+- Build fixes made along the way (all committed): Containerfile global `ARG BASE_IMAGE`; `bash
+  /ctx/build.sh` + exec bits; explicit COSMIC package list (no `cosmic-desktop` metapackage); drop
+  full `libcurl` (base has `libcurl-minimal`); cleanup of dnf/run + greetd `/var` for a clean lint.
+- **Distribution = REBASE (not ISO)** — see [decisions.md](decisions.md). Users install Bazzite then
+  `bootc switch` to the published image. The image being green + public is all that's needed.
+- ISO build is **optional** (titanoboa `build-iso.yml`); only needed for a future hosted ISO. Not the
+  user path — don't gate on it.
 
 ## A2. NVIDIA handling — DECIDED + IMPLEMENTED 2026-07-13
 

@@ -63,9 +63,13 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 - **License compliance:** Apache-2.0 (matches image-template) + `NOTICE` + `THIRD_PARTY.md`
   (attribution, base-image/COSMIC-GPL notices, BricsCAD-not-bundled, trademark/non-endorsement).
   See [decisions.md](decisions.md).
-- **Not yet done** (see [next-work.md](next-work.md)): create + add the Cosign `SIGNING_SECRET`,
-  confirm Actions are enabled, run the (matrix) image build, then run the titanoboa ISO build. No
-  image or ISO has been built/published yet.
+- **BUILT + PUBLIC (2026-07-14):** Cosign secret set, Actions enabled, matrix build green — both
+  `ghcr.io/jrmarcum/ub-cosmic:latest` and `…-nvidia:latest` published and verified public.
+- **Distribution = REBASE, not ISO** (2026-07-14): users install Bazzite → `bootc switch` to the
+  published image (ISO is ~5–8 GB, over GitHub's 2 GiB Release limit). ISO workflow kept but optional.
+  See [decisions.md](decisions.md).
+- **Not yet done** (see [next-work.md](next-work.md)): capture COSMIC layout presets on a live
+  session; decide default session; optional hosted ISO (R2/S3) for fresh installs.
 
 ## Origin of the memory system
 
