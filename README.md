@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="UB-COSMIC-Linux.png" alt="ub-cosmic logo" width="480">
+</p>
+
+<!-- Logo © 2026 Jon Marcum — all rights reserved / trademark; NOT under Apache-2.0. See THIRD_PARTY.md. -->
+
 # ub-cosmic
 
 **Universal Blue COSMIC Desktop Edition** — a custom [bootc](https://github.com/bootc-dev/bootc)
