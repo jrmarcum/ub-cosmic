@@ -4,18 +4,21 @@
 #       display manager). We layer the COSMIC desktop on top so both COSMIC and
 #       GNOME are selectable at the login screen.
 
+# Base image is parametrized as a GLOBAL build arg. It MUST be declared before the
+# first FROM so it can be used in a `FROM ${BASE_IMAGE}` line (an ARG declared after
+# a FROM is stage-scoped and yields an empty FROM → "no FROM statement found").
+# CI builds BOTH variants from this one Containerfile:
+#   - ub-cosmic         → ghcr.io/ublue-os/bazzite-gnome:stable             (AMD/Intel)
+#   - ub-cosmic-nvidia  → ghcr.io/ublue-os/bazzite-gnome-nvidia-open:stable (NVIDIA)
+# Both keep GNOME + GDM; :stable is a FLOATING tag (see cmem/decisions.md — do NOT pin).
+ARG BASE_IMAGE="ghcr.io/ublue-os/bazzite-gnome:stable"
+
 # Allow build scripts to be referenced without being copied into the final image
 FROM scratch AS ctx
 COPY build_files /
 COPY system_files /system_files
 
-# Base Image (parametrized)
-# The base is a build ARG so CI can build BOTH variants from this one Containerfile:
-#   - ub-cosmic         → ghcr.io/ublue-os/bazzite-gnome:stable            (AMD/Intel)
-#   - ub-cosmic-nvidia  → ghcr.io/ublue-os/bazzite-gnome-nvidia-open:stable (NVIDIA)
-# Both keep GNOME + GDM; :stable is a FLOATING tag so daily rebuilds auto-track
-# upstream (see cmem/decisions.md — do NOT pin to a digest).
-ARG BASE_IMAGE="ghcr.io/ublue-os/bazzite-gnome:stable"
+# Base Image
 FROM ${BASE_IMAGE}
 # Universal Blue images: https://github.com/orgs/ublue-os/packages
 
