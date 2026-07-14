@@ -91,6 +91,53 @@ else
     echo "ub-cosmic: NVIDIA variant — GPU auto-rebase service left disabled."
 fi
 
+### GNOME desktop layouts (Zorin-style) ------------------------------------
+# ub-cosmic ships switchable GNOME desktop layouts (see LAYOUTS.md), defaulting
+# to Windows-11-like. Built on packaged GNOME extensions; the layout data lives
+# in /usr/share/ub-cosmic/layouts/ and is applied per-user by `ub-cosmic-layout`.
+# NOTE: these run on the GNOME session (COSMIC has no equivalent extension stack).
+dnf5 install -y \
+    gnome-shell-extension-dash-to-panel \
+    gnome-shell-extension-dash-to-dock \
+    gnome-shell-extension-appindicator \
+    gnome-shell-extension-user-theme \
+    gnome-tweaks \
+    gnome-menus \
+    unzip
+
+# ArcMenu (the Windows-style start menu) is NOT packaged in Fedora, so fetch it
+# from its GitHub release into the system-wide extensions dir. Guarded so a fetch
+# failure NEVER breaks the image build — Windows layouts then fall back to
+# dash-to-panel's built-in app grid. Pin/refresh the URL to match the base's
+# GNOME Shell version; verify on a live VM (see cmem/next-work.md).
+install_arcmenu() {
+    local uuid="arcmenu@arcmenu.com"
+    local dest="/usr/share/gnome-shell/extensions/${uuid}"
+    local url="https://github.com/ArcMenu/ArcMenu/releases/latest/download/${uuid}.zip"
+    local tmp; tmp="$(mktemp -d)"
+    mkdir -p "$dest"
+    if curl -fsSL "$url" -o "$tmp/arcmenu.zip" 2>/dev/null \
+        && unzip -oq "$tmp/arcmenu.zip" -d "$dest" 2>/dev/null; then
+        echo "ub-cosmic: ArcMenu installed system-wide."
+    else
+        echo "ub-cosmic: WARNING — ArcMenu not installed (fetch/unzip failed); Windows layouts use the built-in app grid." >&2
+    fi
+    rm -rf "$tmp"
+    return 0
+}
+install_arcmenu
+
+# Make the layout switcher executable.
+chmod +x /usr/bin/ub-cosmic-layout
+
+# Default layout = Windows 11: bake the preset as a SYSTEM-WIDE dconf default so
+# every new user boots into it. Users can switch anytime with
+# `ub-cosmic-layout set <name>` (their choice overrides this default).
+# The dconf profile ships via system_files (/etc/dconf/profile/user).
+install -Dm0644 /usr/share/ub-cosmic/layouts/windows-11.dconf \
+    /etc/dconf/db/local.d/00-ub-cosmic-windows-11
+dconf update
+
 ### Example: extra packages from Fedora / RPMFusion --------------------------
 # RPMFusion is available by default on Universal Blue images.
 # dnf5 install -y tmux

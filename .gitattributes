@@ -1,0 +1,18 @@
+# These files are consumed inside the Linux image; CRLF line endings would break
+# shebangs and shell/config parsing. Force LF regardless of a contributor's
+# core.autocrlf setting (this repo is often edited on Windows).
+* text=auto eol=lf
+
+*.sh        text eol=lf
+*.dconf     text eol=lf
+*.toml      text eol=lf
+*.yml       text eol=lf
+*.yaml      text eol=lf
+*.json5     text eol=lf
+Containerfile text eol=lf
+Justfile    text eol=lf
+system_files/usr/bin/ub-cosmic-layout text eol=lf
+
+# Binary-ish assets (none yet, but keep git from munging them if added)
+*.png binary
+*.iso binary

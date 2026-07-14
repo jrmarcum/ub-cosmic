@@ -131,6 +131,22 @@ fixes without manual work:
 
 ---
 
+## Desktop layouts (Zorin-style, Windows-11 default)
+
+ub-cosmic ships **12 switchable desktop layouts** (Windows 11, Windows Classic, macOS, Ubuntu,
+GNOME, Cinnamon, elementary, ChromeOS, and more), defaulting to **Windows 11-like** so Windows
+migrants feel at home. Switch anytime:
+
+```bash
+ub-cosmic-layout list
+ub-cosmic-layout set macos      # then log out/in
+```
+
+These run on the **GNOME session** (they use `dash-to-panel` / `ArcMenu` / `dash-to-dock`, which have
+no COSMIC equivalent); COSMIC stays available at login. The presets are a **best-effort first draft
+that still need tuning on a live VM** — see **[LAYOUTS.md](LAYOUTS.md)** for the full list, the
+switcher/capture workflow, and current caveats.
+
 ## GPU: NVIDIA vs AMD/Intel (automatic)
 
 The GPU driver stack is baked into the image at build time, so there are **two images**:

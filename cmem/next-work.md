@@ -29,6 +29,22 @@ implemented (Containerfile args, matrix, rebase service, build.sh gating). See
 - Confirm an AMD/Intel machine stays on `ub-cosmic` (stamp written, no switch).
 - If targeting older NVIDIA GPUs, add/switch the matrix entry to `bazzite-gnome-nvidia`.
 
+## A3. Desktop layouts — tune DRAFT presets on a live VM (raised 2026-07-13)
+
+Framework is done (switcher, 12 presets, extension install, Windows-11 dconf default). Remaining,
+all needing a booted GNOME VM:
+
+- **Tune each of the 12 presets** via `ub-cosmic-layout set <name>` → adjust → `ub-cosmic-layout
+  capture <name>` → copy into `system_files/usr/share/ub-cosmic/layouts/`. Especially verify the
+  `windows-11` centered-taskbar `panel-element-positions` JSON and each ArcMenu `menu-layout` name.
+- **Pin ArcMenu** to a release matching the base's GNOME Shell version (build.sh currently uses
+  `releases/latest`); confirm the GitHub asset name `arcmenu@arcmenu.com.zip` is correct, else the
+  guarded fetch silently no-ops and Windows layouts lose the start menu.
+- **Confirm the packaged extensions load** on the base's GNOME Shell version (version compatibility).
+- **DECIDE default *session*:** to actually land users in the Windows-11 layout, GNOME must be the
+  default session (currently user-selected via GDM). Decide + wire, or accept COSMIC-first with the
+  layout as GNOME's default. Don't flip silently — see [decisions.md](decisions.md).
+
 ## B. Hardening / polish (after first green build)
 
 - **Do NOT pin the base image** — automatic upstream updates are the chosen model (floating

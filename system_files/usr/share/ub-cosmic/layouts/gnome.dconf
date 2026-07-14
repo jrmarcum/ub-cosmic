@@ -1,0 +1,7 @@
+# ub-cosmic layout: GNOME Shell (stock, no taskbar/dock extensions)
+# DRAFT — the switcher resets dash-to-panel/dock subtrees, leaving stock GNOME.
+[org/gnome/shell]
+enabled-extensions=['appindicatorsupport@rgcjonas.gmail.com']
+
+[org/gnome/desktop/wm/preferences]
+button-layout='appmenu:close'

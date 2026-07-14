@@ -1,0 +1,17 @@
+# ub-cosmic layout: Windows-like (general, grouped taskbar + start menu)
+# DRAFT — tune on a live VM.
+[org/gnome/shell]
+enabled-extensions=['dash-to-panel@jderose9.github.com', 'arcmenu@arcmenu.com', 'appindicatorsupport@rgcjonas.gmail.com']
+
+[org/gnome/shell/extensions/dash-to-panel]
+panel-positions='{"0":"BOTTOM"}'
+panel-sizes='{"0":44}'
+group-apps=true
+show-appmenu=false
+
+[org/gnome/shell/extensions/arcmenu]
+menu-layout='Redmond'
+position-in-panel='Left'
+
+[org/gnome/desktop/wm/preferences]
+button-layout='appmenu:minimize,maximize,close'

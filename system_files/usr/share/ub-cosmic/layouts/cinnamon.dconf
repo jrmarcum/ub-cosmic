@@ -1,0 +1,17 @@
+# ub-cosmic layout: Cinnamon-like (bottom panel, menu button, window list)
+# DRAFT — tune on a live VM.
+[org/gnome/shell]
+enabled-extensions=['dash-to-panel@jderose9.github.com', 'arcmenu@arcmenu.com', 'appindicatorsupport@rgcjonas.gmail.com']
+
+[org/gnome/shell/extensions/dash-to-panel]
+panel-positions='{"0":"BOTTOM"}'
+panel-sizes='{"0":40}'
+group-apps=false
+show-appmenu=false
+
+[org/gnome/shell/extensions/arcmenu]
+menu-layout='Mint'
+position-in-panel='Left'
+
+[org/gnome/desktop/wm/preferences]
+button-layout='appmenu:minimize,maximize,close'
