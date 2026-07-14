@@ -16,8 +16,9 @@ this is the short next-up list.
 
 ## B. Hardening / polish (after first green build)
 
-- **Pin the base image** to a digest in `Containerfile` for reproducibility (README § "Pinning").
-  Renovate can keep it updated.
+- **Do NOT pin the base image** — automatic upstream updates are the chosen model (floating
+  `:stable` + daily rebuild; Renovate blocked from digest-pinning the Containerfile). See
+  [decisions.md](decisions.md) § "Automatic upstream updates".
 - Decide whether to **force COSMIC as the default session** (currently user-selected — see
   [decisions.md](decisions.md)).
 - Trim or expand the COSMIC app set in `build.sh` to taste.

@@ -104,16 +104,24 @@ from `just build-iso`.
 
 ---
 
-## Pinning the base image (recommended once stable)
+## Staying up to date (automatic)
 
-For reproducible builds, pin the `FROM` in the Containerfile to a digest:
+This image is set up to **track upstream Universal Blue / Bazzite automatically** so you receive
+fixes without manual work:
 
-```dockerfile
-FROM ghcr.io/ublue-os/bazzite-gnome:stable@sha256:<digest>
-```
+- The `Containerfile` uses a **floating base tag** (`bazzite-gnome:stable`) — every build pulls the
+  latest base.
+- [build.yml](.github/workflows/build.yml) rebuilds **daily** (`cron`), re-layering COSMIC and the
+  newest Fedora COSMIC packages, and republishes `ghcr.io/jrmarcum/ub-cosmic:latest`.
+- Your installed machines auto-update from **your** image (Bazzite's inherited updater); upstream
+  reaches them after the daily rebuild republishes.
+- Renovate keeps GitHub Actions SHA-pinned but is **deliberately blocked from pinning the base
+  image** ([renovate.json5](.github/renovate.json5)) — pinning to a `@sha256` digest would freeze
+  the base and stop automatic updates.
 
-Find the current digest with `skopeo inspect docker://ghcr.io/ublue-os/bazzite-gnome:stable`.
-Renovate (`.github/renovate.json5`) can keep the pin updated automatically.
+> **Reproducibility tradeoff:** if you ever need byte-for-byte reproducible builds instead of
+> auto-updates, you would pin `FROM …:stable@sha256:<digest>` and let Renovate bump it via PRs — but
+> that is intentionally *not* used here, because it delays upstream fixes.
 
 ---
 

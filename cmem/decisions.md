@@ -28,6 +28,26 @@ templates) is fragile on atomic, so we leave it to GDM's per-user "remember last
 ISO's GRUB menu defaults to the COSMIC entry, but the installed system's session default is the
 user's choice. `build.sh` only *verifies* `cosmic.desktop` exists.
 
+## Automatic upstream updates — floating base tag, do NOT pin (owner decision 2026-07-13)
+
+The owner explicitly wants ub-cosmic to **receive Universal Blue / Bazzite updates automatically**
+(especially fixes). The model:
+
+- **`Containerfile` base stays a FLOATING tag** (`bazzite-gnome:stable`) — never pin to `@sha256:…`.
+  A pinned digest would freeze the base and require manual bumps, defeating auto-updates.
+- **`build.yml` daily `cron` rebuild** re-pulls the newest base + newest Fedora COSMIC packages and
+  republishes `ghcr.io/jrmarcum/ub-cosmic:latest` every day (publish/sign runs on `schedule` events).
+- **Installed machines auto-update** from *our* image via Bazzite's inherited updater — they never
+  pull `bazzite-gnome` directly, so upstream reaches them only after our daily rebuild republishes.
+- **Renovate is configured NOT to pin/digest the Containerfile base** (`.github/renovate.json5` has a
+  `matchManagers: ["dockerfile"]` rule disabling `pin`/`pinDigest`/`digest`). This is required —
+  `config:best-practices` pulls in `docker:pinDigests`, which would otherwise pin + auto-merge the
+  base digest and silently freeze updates. Renovate still SHA-pins GitHub Actions (kept).
+
+**Do not "pin the base for reproducibility"** — that tradeoff was explicitly rejected here in favor of
+always receiving upstream fixes. If reproducibility is ever needed, it must be re-decided with the
+owner, not added silently.
+
 ## ISO method: titanoboa (live), with BIB as fallback
 
 Owner chose the **titanoboa** live-ISO path (matches how upstream Bazzite builds ISOs) over
