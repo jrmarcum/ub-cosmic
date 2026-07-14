@@ -8,13 +8,18 @@
    to `ghcr.io/jrmarcum/<name>`. The matrix passes `BASE_IMAGE` + `IMAGE_VARIANT` (via `GITHUB_ENV`,
    read by the Justfile/Containerfile build args). Triggers: push to `main`, daily schedule
    (10:05 UTC), manual dispatch. PRs build but do not push/sign.
-2. **Live ISO build** (`.github/workflows/build-iso.yml`) — manual dispatch. Builds **one** ISO from
-   the **AMD/Intel** image (`ub-cosmic`) via `ublue-os/titanoboa@main`; uploads `ub-cosmic-<tag>.iso`
-   + a `-CHECKSUM` as an artifact (7-day retention). NVIDIA machines are handled by the first-boot
-   auto-rebase baked into that image — no separate NVIDIA ISO.
+2. **Live ISO build** (`.github/workflows/build-iso.yml`) — **OPTIONAL, manual dispatch.** Builds an
+   ISO from the **AMD/Intel** image via `ublue-os/titanoboa@main`; uploads `ub-cosmic-<tag>.iso` +
+   `-CHECKSUM` as an artifact. **NOT the user delivery path** (see below) — kept for local testing or a
+   future externally-hosted ISO.
 
-**Order matters:** the ISO workflow needs the image to already exist in GHCR, so run *Build
-container image* successfully at least once before *Build live ISO (titanoboa)*.
+**Distribution = REBASE, not ISO** (2026-07-14): the published GHCR **image is the deliverable**.
+Users install Bazzite → `bootc switch ghcr.io/jrmarcum/ub-cosmic:latest` → reboot; NVIDIA machines
+first-boot-rebase to `ub-cosmic-nvidia`. A full ISO is ~5–8 GB, over GitHub's 2 GiB Release limit, so
+no ISO is shipped. See [decisions.md](decisions.md) § "Distribution: REBASE-first".
+
+**Order matters (only if building the optional ISO):** the ISO workflow needs the image in GHCR, so
+run *Build container image* successfully first.
 
 ## Automatic upstream updates (how new Bazzite/UB reaches users)
 

@@ -101,7 +101,7 @@ migrants — **on the COSMIC session** (the primary desktop), NOT GNOME.
   silently.
 - **Legal/ethics:** our own presets with open tools; do NOT copy Zorin's proprietary assets/code.
 
-## NVIDIA vs AMD/Intel: two images, one ISO, first-boot auto-rebase (owner decision 2026-07-13)
+## NVIDIA vs AMD/Intel: two images + first-boot auto-rebase (owner decision 2026-07-13)
 
 GPU drivers are baked into the image at build time, so a single image can't serve both GPU
 families. Decisions:
@@ -109,16 +109,18 @@ families. Decisions:
 - **Build TWO images** via a `build.yml` matrix: `ub-cosmic` (from `bazzite-gnome:stable`, AMD/Intel)
   and `ub-cosmic-nvidia` (from `bazzite-gnome-nvidia-open:stable`, NVIDIA **open** kernel modules —
   covers RTX 20-series / GTX 16-series+). Older GPUs would use `bazzite-gnome-nvidia` (proprietary).
-- **Build ONE ISO**, from the AMD/Intel image (titanoboa live ISO). The user flashes one ISO
-  regardless of GPU.
+- **No ISO shipped — rebase-first (updated 2026-07-14):** regardless of GPU, users install Bazzite
+  and `bootc switch` to the AMD/Intel `ub-cosmic` image; the first-boot rebase (below) moves NVIDIA
+  machines to `ub-cosmic-nvidia`. (The earlier plan was a single titanoboa ISO — superseded; the ISO
+  is now optional. See "Distribution: REBASE-first".)
 - **First-boot auto-rebase:** the AMD/Intel image ships `ub-cosmic-gpu-rebase.service` +
   `/usr/lib/ub-cosmic/gpu-rebase.sh`. On boot it runs `lspci`; if an NVIDIA GPU is present it
   `bootc switch`es to `ub-cosmic-nvidia` and reboots once. The NVIDIA image does NOT ship/enable the
   service (build.sh gates enablement on `IMAGE_VARIANT`).
-- **Why first-boot and not install-time:** the owner picked titanoboa for the ISO, and titanoboa is a
-  **live-only** ISO builder with **no Anaconda kickstart `%post`** (verified by reading its
-  `build_iso.sh`). True install-time GPU detection would require the Anaconda `anaconda-iso` (BIB)
-  path; that was explicitly declined in favor of keeping titanoboa + first-boot rebase.
+- **Why first-boot (historical):** when an ISO was still planned, titanoboa (live-only, no Anaconda
+  kickstart `%post`) couldn't do install-time GPU detection, so first-boot rebase was chosen. Under
+  rebase-first this is moot — there's no installer at all, so first-boot rebase is simply the
+  mechanism.
 - **Network caveat (inherent):** the rebase must pull the NVIDIA image, so it needs internet.
   Ethernet → applies on first boot; Wi-Fi → applies on the next reboot after the user first connects.
   The service retries each boot until done (stamp: `/var/lib/ub-cosmic/gpu-rebase.done`).

@@ -18,7 +18,8 @@ this is the short next-up list.
 
 ## A2. NVIDIA handling — DECIDED + IMPLEMENTED 2026-07-13
 
-Resolved: **two images + one ISO + first-boot auto-rebase**, NVIDIA base = `-nvidia-open`. Fully
+Resolved: **two images + first-boot auto-rebase** (rebase-first, no shipped ISO), NVIDIA base
+= `-nvidia-open`. Fully
 implemented (Containerfile args, matrix, rebase service, build.sh gating). See
 [decisions.md](decisions.md) § "NVIDIA vs AMD/Intel". Remaining verification once builds run:
 
