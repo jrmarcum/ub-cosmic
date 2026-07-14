@@ -7,7 +7,9 @@
    `bazzite-gnome-nvidia-open:stable`). Each is rechunked, tagged, **signed with Cosign**, and pushed
    to `ghcr.io/jrmarcum/<name>`. The matrix passes `BASE_IMAGE` + `IMAGE_VARIANT` (via `GITHUB_ENV`,
    read by the Justfile/Containerfile build args). Triggers: push to `main`, daily schedule
-   (10:05 UTC), manual dispatch. PRs build but do not push/sign.
+   (10:05 UTC), manual dispatch. PRs build but do not push/sign. **Docs/memory/license/logo pushes
+   are `paths-ignore`d** (no image build for `*.md`, `cmem/**`, `LICENSE`, `NOTICE`, the logo, etc.) —
+   the daily schedule and manual dispatch ignore paths-ignore, so scheduled rebuilds still run.
 2. **Live ISO build** (`.github/workflows/build-iso.yml`) — **OPTIONAL, manual dispatch.** Builds an
    ISO from the **AMD/Intel** image via `ublue-os/titanoboa@main`; uploads `ub-cosmic-<tag>.iso` +
    `-CHECKSUM` as an artifact. **NOT the user delivery path** (see below) — kept for local testing or a

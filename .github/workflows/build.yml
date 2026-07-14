@@ -9,8 +9,19 @@ on:
   push:
     branches:
       - main
+    # Docs/memory/license/logo changes don't affect the built image, so skip the
+    # (30-min, two-variant) build for them. A commit that ALSO touches a build file
+    # still builds — paths-ignore only skips when EVERY changed file matches.
+    # The daily `schedule` and `workflow_dispatch` are unaffected by paths-ignore.
     paths-ignore:
-      - '**/README.md'
+      - '*.md'
+      - '**/*.md'
+      - 'cmem/**'
+      - 'LICENSE'
+      - 'NOTICE'
+      - 'UB-COSMIC-Linux.png'
+      - '.gitattributes'
+      - '.gitignore'
   workflow_dispatch:
 
 env:
