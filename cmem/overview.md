@@ -36,21 +36,21 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 
 ## Current state (2026-07-13)
 
-- Scaffold complete and pushed to `main` (`main` tip `f4b927d`). An early divergence with a README
+- Scaffold complete and pushed to `main` (`main` tip `923ab8e`). An early divergence with a README
   edit made on github.com was resolved by merge `a2ff811`.
 - All `CHANGE_ME`/`<you>` placeholders filled with `jrmarcum`.
 - **Portable memory system in place** (`cmem/` + tracked `CLAUDE.md` pointer, commit `33a7db7`); the
   empty machine-local `~/.claude/.../memory/` dir was removed — all memory now lives in `cmem/`.
-- **Automatic upstream updates configured** (commit `f4b927d`): floating `bazzite-gnome:stable` +
-  daily rebuild, and Renovate blocked from pinning the base. See [decisions.md](decisions.md).
-- **greenboot auto-rollback enabled by default** (build.sh + a custom graphical-target health check):
-  a bad update self-heals. See [decisions.md](decisions.md).
-- **NVIDIA handled via two images + one ISO + first-boot auto-rebase** (decided 2026-07-13): build
-  `ub-cosmic` (AMD/Intel) and `ub-cosmic-nvidia` (nvidia-open) in a CI matrix; the single ISO installs
-  the AMD/Intel image, which rebases NVIDIA machines on first boot. See [decisions.md](decisions.md).
+- **Automatic upstream updates configured** (commit `f4b927d`): floating base tag + daily rebuild,
+  and Renovate blocked from pinning the base. See [decisions.md](decisions.md).
+- **greenboot auto-rollback enabled by default** (commit `a4ab810`): build.sh + a custom
+  graphical-target health check, so a bad update self-heals. See [decisions.md](decisions.md).
+- **NVIDIA handled via two images + one ISO + first-boot auto-rebase** (commit `923ab8e`): a CI matrix
+  builds `ub-cosmic` (AMD/Intel) and `ub-cosmic-nvidia` (nvidia-open); the single ISO installs the
+  AMD/Intel image, which rebases NVIDIA machines on first boot. See [decisions.md](decisions.md).
 - **Not yet done** (see [next-work.md](next-work.md)): create + add the Cosign `SIGNING_SECRET`,
-  confirm Actions are enabled, run the image build, then run the titanoboa ISO build. No image or ISO
-  has been built/published yet.
+  confirm Actions are enabled, run the (matrix) image build, then run the titanoboa ISO build. No
+  image or ISO has been built/published yet.
 
 ## Origin of the memory system
 
