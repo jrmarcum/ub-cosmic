@@ -40,6 +40,38 @@ test -f /usr/share/wayland-sessions/cosmic.desktop \
 # /etc/gdm defaults / AccountsService template — this is intentionally left out
 # because the mechanism is per-user and fragile on atomic. See README.
 
+### greenboot — automatic health-check + rollback --------------------------
+# Makes a bad update self-heal: greenboot runs health checks after each boot and,
+# if REQUIRED checks fail across the configured number of attempts (default 3),
+# automatically rolls back to the previous working deployment. This is the
+# non-technical-user "just want a working system" safety net.
+#
+# `greenboot-default-health-checks` provides the vetted required checks (failed
+# systemd units, DNS/network, etc.); our own required.d/50-graphical-target.sh
+# (shipped via system_files) additionally rolls back if the desktop never comes up.
+dnf5 install -y greenboot greenboot-default-health-checks
+
+# Enable the greenboot + redboot units. Some greenboot units are 'static' (pulled
+# in by targets) and cannot be enabled directly — tolerate those; the package also
+# applies its own systemd preset at install, so this is belt-and-suspenders for the
+# atomic image build.
+for unit in \
+    greenboot-healthcheck.service \
+    greenboot-task-runner.service \
+    greenboot-status.service \
+    greenboot-grub2-set-counter.service \
+    greenboot-grub2-set-success.service \
+    greenboot-rpm-ostree-grub2-check-fallback.service \
+    redboot-auto-reboot.service \
+    redboot-task-runner.service; do
+    systemctl enable "$unit" 2>/dev/null \
+        || echo "note: '${unit}' not directly enablable (likely static) — skipping"
+done
+
+# Our custom health-check scripts must be executable (git checkouts on some hosts
+# drop the +x bit).
+chmod +x /etc/greenboot/check/required.d/*.sh 2>/dev/null || true
+
 ### Example: extra packages from Fedora / RPMFusion --------------------------
 # RPMFusion is available by default on Universal Blue images.
 # dnf5 install -y tmux

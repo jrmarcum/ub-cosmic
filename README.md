@@ -125,6 +125,21 @@ fixes without manual work:
 
 ---
 
+## Reliability: automatic rollback (greenboot)
+
+The image ships **[greenboot](https://github.com/fedora-iot/greenboot) enabled by default**, so a bad
+update self-heals with no user action:
+
+- After each boot, greenboot runs health checks. If they fail across the default 3 boot attempts, the
+  system **automatically rolls back** to the previous working deployment (`rpm-ostree rollback`).
+- Checks: the vetted `greenboot-default-health-checks` (failed services, network) plus a custom
+  `required.d/50-graphical-target.sh` that rolls back if the **desktop never comes up** (e.g. a
+  GPU-driver regression → black screen). It waits ~120s to avoid false-triggering on a slow boot.
+- A fully non-booting update (kernel panic) is caught by the GRUB boot counter even before health
+  checks run.
+
+Manual rollback (`bootc rollback`, the GRUB previous entry, or Bazzite's `brh`) still works too.
+
 ## Caveats
 
 - **COSMIC on atomic is still young.** COSMIC entered Fedora's repos in F41 and is

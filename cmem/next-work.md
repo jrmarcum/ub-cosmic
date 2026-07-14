@@ -10,9 +10,29 @@ this is the short next-up list.
 2. **Confirm GitHub Actions are enabled** on the repo (Actions tab → enable workflows).
 3. **Run *Build container image*** and confirm `ghcr.io/jrmarcum/ub-cosmic:latest` publishes.
    - First run is slow; COSMIC adds a few hundred MB over Bazzite.
-   - Watch for `dnf5 install cosmic-desktop` failing if a package name drifted for the base's Fedora
-     release — adjust in `build_files/build.sh`.
+   - Watch for `dnf5 install cosmic-desktop` / `greenboot` failing if a package name drifted for the
+     base's Fedora release — adjust in `build_files/build.sh`.
+   - Verify the greenboot `systemctl enable` loop didn't error the build; confirm the units are
+     enabled in the built image.
 4. **Run *Build live ISO (titanoboa)*** and download the ISO artifact; boot-test it in a VM.
+   - Sanity-check greenboot: a healthy boot should reach the desktop and clear `boot_counter`.
+
+## A2. DECIDE: nvidia vs non-nvidia variant(s) (raised 2026-07-13)
+
+The base image is a **build-time** choice — you cannot detect the user's GPU before selecting it.
+Bazzite ships separate images per GPU (`bazzite-gnome` for AMD/Intel; `bazzite-gnome-nvidia` /
+`bazzite-gnome-nvidia-open` for NVIDIA). Options for ub-cosmic:
+
+1. **Build two images + two ISOs** — `ub-cosmic` (bazzite-gnome) and `ub-cosmic-nvidia`
+   (bazzite-gnome-nvidia-open). User self-selects the matching ISO (what Bazzite does). Simplest,
+   robust. **Leading option.**
+2. **First-boot GPU auto-detect + rebase** — ship the non-nvidia ISO; a first-boot service runs
+   `lspci`, and if NVIDIA is present rebases to `ub-cosmic-nvidia`. Smoothest for the user but adds a
+   long first-boot + reboot and a failure mode. Can layer on top of option 1 later.
+
+Sub-decision if NVIDIA is built: `-nvidia-open` (open kernel modules; RTX 20-series / GTX 16-series
+and newer — recommended) vs `-nvidia` (proprietary; older GPUs). Needs owner input. Blocks a clean
+build-matrix design.
 
 ## B. Hardening / polish (after first green build)
 

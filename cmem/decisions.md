@@ -48,6 +48,28 @@ The owner explicitly wants ub-cosmic to **receive Universal Blue / Bazzite updat
 always receiving upstream fixes. If reproducibility is ever needed, it must be re-decided with the
 owner, not added silently.
 
+## greenboot auto-rollback ENABLED by default (owner decision 2026-07-13)
+
+The owner wants the image to **self-heal** for non-technical users: a bad update that boots badly
+should roll back automatically, not require manual GRUB/`bootc rollback`. So `build.sh` installs
+`greenboot greenboot-default-health-checks` and enables the greenboot/redboot units.
+
+- **Default required checks** come from `greenboot-default-health-checks` (failed systemd units,
+  network/DNS, etc.). Plus a **custom required check** at
+  `system_files/etc/greenboot/check/required.d/50-graphical-target.sh` that fails if
+  `graphical.target` doesn't go active within ~120s (catches a broken-desktop / black-screen update).
+- **Mechanism:** greenboot uses the GRUB `boot_counter`; after the default 3 failed boots it triggers
+  `rpm-ostree rollback` to the previous deployment. A fully non-booting update (kernel panic) is
+  covered by the counter even without health checks.
+- **Rollback-loop guard:** the graphical check waits/retries up to ~120s so a slow-but-healthy boot
+  never false-triggers. Keep new REQUIRED checks conservative for the same reason; put anything
+  speculative in `wanted.d` (advisory, non-fatal).
+- Custom check scripts must be **executable** — `build.sh` `chmod +x`es `required.d/*.sh` because git
+  checkouts on Windows can drop the +x bit.
+
+This is inherited-base behavior we deliberately turn ON; plain Bazzite ships rollback as *manual*
+only. Applies to every ub-cosmic variant (incl. any future nvidia variant).
+
 ## ISO method: titanoboa (live), with BIB as fallback
 
 Owner chose the **titanoboa** live-ISO path (matches how upstream Bazzite builds ISOs) over
