@@ -23,9 +23,10 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 | Path | Purpose |
 | --- | --- |
 | `Containerfile` | Entry point. Parametrized `ARG BASE_IMAGE` / `ARG IMAGE_VARIANT` so CI builds both GPU variants; runs the build script, `bootc container lint`. |
-| `build_files/build.sh` | All package installs / customizations. Installs `cosmic-desktop` + COSMIC apps; keeps GDM; installs + enables **greenboot** auto-rollback; enables the **first-boot GPU auto-rebase** service on the AMD/Intel variant only. |
+| `build_files/build.sh` | All package installs / customizations. Installs `cosmic-desktop` + COSMIC apps; keeps GDM; installs + enables **greenboot** auto-rollback; enables the **first-boot GPU auto-rebase** service on the AMD/Intel variant only; bakes **BricsCAD V26 (Qt6) runtime deps**. |
 | `system_files/` | Tree copied to `/` during build. Holds the titanoboa ISO contract (`usr/lib/bootc-image-builder/iso.yaml`), the greenboot check, the GPU auto-rebase service + script, the **COSMIC layout switcher** (`usr/bin/ub-cosmic-layout`), and **COSMIC layout presets** (`usr/share/ub-cosmic/cosmic-layouts/<name>/`, captured from live sessions). |
 | `LAYOUTS.md` | Guide to the COSMIC desktop layouts + the capture workflow. |
+| `BRICSCAD.md` | How to run BricsCAD: what deps are baked, layering the RPM, GPU/Wayland caveats. |
 | `image-template.env` | Build vars (`IMAGE_NAME=ub-cosmic`, `REPO_ORGANIZATION=jrmarcum`). Sourced by the Justfile. |
 | `.github/workflows/build.yml` | Builds, signs (Cosign), and pushes the OCI image to GHCR. |
 | `.github/workflows/build-iso.yml` | Builds the live ISO via titanoboa; uploads ISO + checksum as artifacts. |
@@ -54,6 +55,8 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
   under `cosmic-layouts/` is the README; content must be captured on a live COSMIC session. ~4–6
   approximations, not 12 (COSMIC limits). Earlier GNOME-based version was removed. See
   [decisions.md](decisions.md) and LAYOUTS.md.
+- **BricsCAD-ready:** build.sh bakes BricsCAD V26 (Qt6) runtime deps; the app is user-layered. See
+  [decisions.md](decisions.md) and BRICSCAD.md.
 - **Not yet done** (see [next-work.md](next-work.md)): create + add the Cosign `SIGNING_SECRET`,
   confirm Actions are enabled, run the (matrix) image build, then run the titanoboa ISO build. No
   image or ISO has been built/published yet.

@@ -171,6 +171,13 @@ NVIDIA driver base is **`bazzite-gnome-nvidia-open`** (open kernel modules — R
 GTX 16-series and newer). For older GPUs, change the matrix in
 [build.yml](.github/workflows/build.yml) to `bazzite-gnome-nvidia`.
 
+## BricsCAD-ready
+
+The image bakes in the runtime libraries **BricsCAD V26** (Qt 6.8-based) needs — Qt 6, the Qt xcb
+platform-plugin stack, OpenGL/GLU, fonts, and legacy GTK2 compat — so it runs once you layer the
+app. BricsCAD itself is proprietary/licensed and isn't bundled; see **[BRICSCAD.md](BRICSCAD.md)**
+for the install steps and the GPU caveat (BricsCAD 3D accel needs NVIDIA or AMD — not Intel-only).
+
 ## Reliability: automatic rollback (greenboot)
 
 The image ships **[greenboot](https://github.com/fedora-iot/greenboot) enabled by default**, so a bad

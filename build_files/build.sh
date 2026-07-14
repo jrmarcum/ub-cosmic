@@ -112,6 +112,44 @@ else
     echo "ub-cosmic: no captured content for default layout '${DEFAULT_LAYOUT}' yet — skipping default bake (capture it on a live COSMIC session)."
 fi
 
+### BricsCAD runtime dependencies ------------------------------------------
+# Give BricsCAD (V26, Qt 6.8-based) the best chance of running once the user
+# layers its Fedora RPM (see BRICSCAD.md — the app itself is proprietary/licensed
+# and NOT bundled here). Fedora is officially supported (glibc >= 2.35). We bake
+# the runtime libraries so the RPM's deps resolve and the Qt xcb platform plugin
+# loads. Applies to both GPU variants.
+dnf5 install -y \
+    qt6-qtbase \
+    qt6-qtbase-gui \
+    qt6-qtsvg \
+    qt6-qtwayland \
+    xcb-util \
+    xcb-util-image \
+    xcb-util-keysyms \
+    xcb-util-renderutil \
+    xcb-util-wm \
+    xcb-util-cursor \
+    libxkbcommon \
+    libxkbcommon-x11 \
+    libX11-xcb \
+    libSM \
+    libICE \
+    libXi \
+    libXtst \
+    libXrandr \
+    libXmu \
+    libXScrnSaver \
+    mesa-libGLU \
+    libdeflate \
+    fontconfig \
+    freetype \
+    openssl-libs \
+    libcurl \
+    hicolor-icon-theme
+# Legacy GTK2 compat — V26 is Qt, but the RPM historically still Requires these;
+# harmless belt-and-suspenders so `dnf install BricsCAD*.rpm` never blocks on them.
+dnf5 install -y gtk2 libpng12
+
 ### Example: extra packages from Fedora / RPMFusion --------------------------
 # RPMFusion is available by default on Universal Blue images.
 # dnf5 install -y tmux

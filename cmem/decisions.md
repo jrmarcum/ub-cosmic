@@ -124,6 +124,26 @@ threads them via `env_var_or_default` (local builds default to the AMD/Intel bas
 matrix sets them per variant. The image ref inside `gpu-rebase.sh` is hard-coded to
 `ghcr.io/jrmarcum/ub-cosmic-nvidia:latest` — update it if the owner/name changes.
 
+## BricsCAD runtime deps baked in; app is user-layered (owner decision 2026-07-13)
+
+Owner wants BricsCAD to have the best chance of running. Facts + decisions:
+
+- **BricsCAD V26 is Qt 6.8-based** (older versions were GTK — verified 2026-07-13). Fedora is an
+  officially supported platform (glibc ≥ 2.35, x86-64), so the Bazzite base qualifies.
+- **We bake the runtime libraries only, NOT the app** (proprietary + license-gated). `build.sh`
+  installs Qt6 (`qt6-qtbase`/`-gui`/`qtsvg`/`qtwayland`), the **Qt xcb platform-plugin stack**
+  (`xcb-util*`, `libxkbcommon*`, `libX11-xcb` — the "could not load platform plugin xcb" culprits),
+  X11 libs, `mesa-libGLU`, fonts, `openssl-libs`/`libcurl`, and legacy `gtk2`/`libpng12` as a
+  belt-and-suspenders for the RPM's older Requires. All package names verified in Fedora repos.
+- **Install path (BRICSCAD.md):** user downloads the Fedora RPM and **layers it** with
+  `rpm-ostree install BricsCAD*.rpm` (atomic/bootc — not a plain dnf into the running system).
+- **GPU caveat (Bricsys):** 3D HW accel is NOT supported on Intel graphics or dual-GPU laptops →
+  works on NVIDIA (`ub-cosmic-nvidia`) and AMD; Intel-only = software 3D. This dovetails with the
+  NVIDIA auto-rebase.
+- **Wayland:** Qt6 runs via `qt6-qtwayland` or XWayland (xcb libs); `QT_QPA_PLATFORM=xcb` is the
+  fallback. If the deps list ever needs trimming for size, the xcb-util family + Qt6 base are the
+  must-keeps; gtk2/libpng12 are the first to drop.
+
 ## ISO method: titanoboa (live), with BIB as fallback
 
 Owner chose the **titanoboa** live-ISO path (matches how upstream Bazzite builds ISOs) over

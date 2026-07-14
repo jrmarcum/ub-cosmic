@@ -47,6 +47,15 @@ Framework is done (COSMIC file-tree switcher, capture, default-bake wiring). Pre
 - The earlier GNOME layout system was removed (COSMIC-only decision) — recoverable from git history
   if ever wanted for the GNOME backup session.
 
+## A4. Verify BricsCAD runs (after first green build)
+
+- Layer the BricsCAD V26 Fedora RPM (`rpm-ostree install`) on a built image and confirm it launches
+  and the Qt xcb platform plugin loads (the baked `xcb-util*`/`libxkbcommon*` should cover it).
+- Confirm 3D works on NVIDIA (`ub-cosmic-nvidia`) and AMD; expect no HW 3D on Intel-only (BricsCAD
+  limitation). Try `QT_QPA_PLATFORM=xcb` if Wayland rendering misbehaves.
+- If the RPM's `Requires` fails on anything not baked, add it to the BricsCAD block in build.sh.
+  See [decisions.md](decisions.md) and BRICSCAD.md.
+
 ## B. Hardening / polish (after first green build)
 
 - **Do NOT pin the base image** — automatic upstream updates are the chosen model (floating

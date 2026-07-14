@@ -60,11 +60,12 @@ Report findings with `file:line` + severity, then fix the safe/clear ones and no
 | --- | --- |
 | [overview.md](overview.md) | What ub-cosmic is, repo layout, key files, and current state (bazzite-gnome base + COSMIC layered + titanoboa live ISO). |
 | [build-and-release.md](build-and-release.md) | The build → publish → ISO pipeline: workflows, the Cosign signing requirement, build order, the titanoboa ISO, and the **automatic upstream-update model** (floating tag + daily rebuild). |
-| [decisions.md](decisions.md) | Load-bearing design decisions that must not be silently reverted (base choice, COSMIC layering method, keep-GDM, titanoboa over BIB, automatic updates / do-not-pin the base, greenboot auto-rollback on by default, NVIDIA: two images + one ISO + first-boot auto-rebase, **COSMIC-native desktop layouts (Windows-like default, captured from live sessions)**). |
+| [decisions.md](decisions.md) | Load-bearing design decisions that must not be silently reverted (base choice, COSMIC layering method, keep-GDM, titanoboa over BIB, automatic updates / do-not-pin the base, greenboot auto-rollback on by default, NVIDIA: two images + one ISO + first-boot auto-rebase, COSMIC-native desktop layouts (Windows-like default, captured from live sessions), **BricsCAD V26/Qt6 runtime deps baked in**). |
 | [next-work.md](next-work.md) | Prioritized "what to pick up next" list and open setup steps. |
 
 ## Related files outside cmem
 
 - `README.md` — the **public, user-facing** doc (setup, build order, install). NOT project memory.
-- `LAYOUTS.md` — user-facing guide to the 12 Zorin-style GNOME desktop layouts + switcher/capture.
+- `LAYOUTS.md` — user-facing guide to the COSMIC desktop layouts + switcher/capture.
+- `BRICSCAD.md` — user-facing guide to running BricsCAD (baked deps, layering the RPM, GPU caveats).
 - `CLAUDE.md` — small git-tracked pointer to this folder; auto-loaded by Claude Code each session.
