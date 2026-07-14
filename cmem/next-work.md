@@ -71,3 +71,7 @@ Framework is done (COSMIC file-tree switcher, capture, default-bake wiring). Pre
 
 - ArtifactHub listing (`artifacthub-repo.yml` has a placeholder `repositoryID`).
 - Optional S3 upload of ISOs (secrets `S3_*`) if artifacts aren't enough.
+- **GATE — legal review before commercial / broad public distribution.** Owner (2026-07-13) is
+  personal/self-use only for now and is NOT distributing commercially; a lawyer review is warranted
+  first if that changes (trademarks, OS-image redistribution, BricsCAD-not-bundled). See
+  [decisions.md](decisions.md) § "Licensing & compliance posture".
