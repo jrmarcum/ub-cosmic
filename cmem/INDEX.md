@@ -60,7 +60,7 @@ Report findings with `file:line` + severity, then fix the safe/clear ones and no
 | --- | --- |
 | [overview.md](overview.md) | What ub-cosmic is, repo layout, key files, and current state (bazzite-gnome base + COSMIC layered + titanoboa live ISO). |
 | [build-and-release.md](build-and-release.md) | The build → publish → ISO pipeline: workflows, the Cosign signing requirement, build order, the titanoboa ISO, and the **automatic upstream-update model** (floating tag + daily rebuild). |
-| [decisions.md](decisions.md) | Load-bearing design decisions that must not be silently reverted (base choice, COSMIC layering method, keep-GDM, titanoboa over BIB, automatic updates / do-not-pin the base, **greenboot auto-rollback on by default**). |
+| [decisions.md](decisions.md) | Load-bearing design decisions that must not be silently reverted (base choice, COSMIC layering method, keep-GDM, titanoboa over BIB, automatic updates / do-not-pin the base, greenboot auto-rollback on by default, **NVIDIA: two images + one ISO + first-boot auto-rebase**). |
 | [next-work.md](next-work.md) | Prioritized "what to pick up next" list and open setup steps. |
 
 ## Related files outside cmem

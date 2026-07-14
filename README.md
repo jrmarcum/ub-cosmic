@@ -13,12 +13,18 @@ ISO** is produced with [titanoboa](https://github.com/ublue-os/titanoboa).
 
 | Artifact | How | Where |
 | --- | --- | --- |
-| OCI image `ghcr.io/jrmarcum/ub-cosmic:latest` | `.github/workflows/build.yml` | GitHub Container Registry |
-| Live installer ISO | `.github/workflows/build-iso.yml` (titanoboa) | Workflow run **Artifacts** |
+| OCI image `ghcr.io/jrmarcum/ub-cosmic:latest` (AMD/Intel) | `.github/workflows/build.yml` (matrix) | GitHub Container Registry |
+| OCI image `ghcr.io/jrmarcum/ub-cosmic-nvidia:latest` (NVIDIA) | `.github/workflows/build.yml` (matrix) | GitHub Container Registry |
+| **One** live installer ISO (from the AMD/Intel image) | `.github/workflows/build-iso.yml` (titanoboa) | Workflow run **Artifacts** |
 
-**Base:** `ghcr.io/ublue-os/bazzite-gnome:stable` — GDM stays the display manager, so
-at login you can pick **COSMIC** or **GNOME** (backup). GDM remembers each user's
-last choice; the live ISO's boot menu defaults to the COSMIC entry.
+**Bases:** `bazzite-gnome:stable` (AMD/Intel) and `bazzite-gnome-nvidia-open:stable`
+(NVIDIA open drivers). GDM stays the display manager, so at login you can pick
+**COSMIC** or **GNOME** (backup); GDM remembers each user's choice.
+
+**One ISO, right drivers automatically:** you flash a single ISO regardless of GPU.
+It installs the AMD/Intel image, which on first boot detects an NVIDIA card and
+transparently rebases to `ub-cosmic-nvidia` — see
+[NVIDIA auto-detection](#gpu-nvidia-vs-amdintel-automatic) below.
 
 ---
 
@@ -124,6 +130,30 @@ fixes without manual work:
 > that is intentionally *not* used here, because it delays upstream fixes.
 
 ---
+
+## GPU: NVIDIA vs AMD/Intel (automatic)
+
+The GPU driver stack is baked into the image at build time, so there are **two images**:
+`ub-cosmic` (AMD/Intel) and `ub-cosmic-nvidia` (NVIDIA open kernel modules). You cannot
+detect a user's GPU before the image is built — but you can at install time, so the end
+user still only deals with **one ISO**:
+
+1. The single ISO installs the **AMD/Intel** image.
+2. On first boot, `ub-cosmic-gpu-rebase.service` runs
+   [`/usr/lib/ub-cosmic/gpu-rebase.sh`](system_files/usr/lib/ub-cosmic/gpu-rebase.sh):
+   it checks `lspci` for an NVIDIA GPU.
+3. **No NVIDIA** → nothing happens; you stay on the AMD/Intel image.
+4. **NVIDIA present** → it `bootc switch`es to `ghcr.io/jrmarcum/ub-cosmic-nvidia:latest`
+   and reboots once. The machine ends up on the correct drivers with no user choice.
+
+> **Network note:** the rebase needs internet to pull the NVIDIA image. On Ethernet this
+> happens on first boot. On Wi-Fi (not configured until you reach the desktop), it applies
+> on the next reboot after you first connect — the service retries each boot until done,
+> tracked by `/var/lib/ub-cosmic/gpu-rebase.done`.
+
+NVIDIA driver base is **`bazzite-gnome-nvidia-open`** (open kernel modules — RTX 20-series /
+GTX 16-series and newer). For older GPUs, change the matrix in
+[build.yml](.github/workflows/build.yml) to `bazzite-gnome-nvidia`.
 
 ## Reliability: automatic rollback (greenboot)
 

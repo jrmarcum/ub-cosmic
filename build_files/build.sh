@@ -6,6 +6,10 @@
 
 set -ouex pipefail
 
+# Which image variant we're building — passed from the Containerfile ARG.
+# "base" = AMD/Intel (ub-cosmic); "nvidia" = ub-cosmic-nvidia.
+IMAGE_VARIANT="${IMAGE_VARIANT:-base}"
+
 ### system_files -----------------------------------------------------------
 # Copy anything under system_files/ in the repo onto the image root ("/").
 # This is how the titanoboa ISO contract file (iso.yaml) gets installed.
@@ -71,6 +75,21 @@ done
 # Our custom health-check scripts must be executable (git checkouts on some hosts
 # drop the +x bit).
 chmod +x /etc/greenboot/check/required.d/*.sh 2>/dev/null || true
+
+### GPU variant — first-boot auto-rebase (AMD/Intel image only) -------------
+# One ISO is built from the AMD/Intel image. That image ships a first-boot
+# service that detects an NVIDIA GPU and rebases to ub-cosmic-nvidia, so the
+# machine ends up on the right drivers with no user choice. The NVIDIA image is
+# already correct, so it must NOT carry the service (would loop / be pointless).
+chmod +x /usr/lib/ub-cosmic/gpu-rebase.sh
+if [[ "${IMAGE_VARIANT}" == "base" ]]; then
+    dnf5 install -y pciutils   # provides lspci for GPU detection
+    systemctl enable ub-cosmic-gpu-rebase.service
+    echo "ub-cosmic: enabled first-boot GPU auto-rebase (base/AMD-Intel variant)."
+else
+    systemctl disable ub-cosmic-gpu-rebase.service 2>/dev/null || true
+    echo "ub-cosmic: NVIDIA variant — GPU auto-rebase service left disabled."
+fi
 
 ### Example: extra packages from Fedora / RPMFusion --------------------------
 # RPMFusion is available by default on Universal Blue images.

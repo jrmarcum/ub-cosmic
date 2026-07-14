@@ -17,22 +17,17 @@ this is the short next-up list.
 4. **Run *Build live ISO (titanoboa)*** and download the ISO artifact; boot-test it in a VM.
    - Sanity-check greenboot: a healthy boot should reach the desktop and clear `boot_counter`.
 
-## A2. DECIDE: nvidia vs non-nvidia variant(s) (raised 2026-07-13)
+## A2. NVIDIA handling — DECIDED + IMPLEMENTED 2026-07-13
 
-The base image is a **build-time** choice — you cannot detect the user's GPU before selecting it.
-Bazzite ships separate images per GPU (`bazzite-gnome` for AMD/Intel; `bazzite-gnome-nvidia` /
-`bazzite-gnome-nvidia-open` for NVIDIA). Options for ub-cosmic:
+Resolved: **two images + one ISO + first-boot auto-rebase**, NVIDIA base = `-nvidia-open`. Fully
+implemented (Containerfile args, matrix, rebase service, build.sh gating). See
+[decisions.md](decisions.md) § "NVIDIA vs AMD/Intel". Remaining verification once builds run:
 
-1. **Build two images + two ISOs** — `ub-cosmic` (bazzite-gnome) and `ub-cosmic-nvidia`
-   (bazzite-gnome-nvidia-open). User self-selects the matching ISO (what Bazzite does). Simplest,
-   robust. **Leading option.**
-2. **First-boot GPU auto-detect + rebase** — ship the non-nvidia ISO; a first-boot service runs
-   `lspci`, and if NVIDIA is present rebases to `ub-cosmic-nvidia`. Smoothest for the user but adds a
-   long first-boot + reboot and a failure mode. Can layer on top of option 1 later.
-
-Sub-decision if NVIDIA is built: `-nvidia-open` (open kernel modules; RTX 20-series / GTX 16-series
-and newer — recommended) vs `-nvidia` (proprietary; older GPUs). Needs owner input. Blocks a clean
-build-matrix design.
+- Confirm the matrix publishes BOTH `ub-cosmic` and `ub-cosmic-nvidia` to GHCR.
+- Test on an actual/VM NVIDIA machine: first boot should detect NVIDIA, `bootc switch`, reboot once,
+  and land on `ub-cosmic-nvidia`. Confirm no rebase loop and the `gpu-rebase.done` stamp is written.
+- Confirm an AMD/Intel machine stays on `ub-cosmic` (stamp written, no switch).
+- If targeting older NVIDIA GPUs, add/switch the matrix entry to `bazzite-gnome-nvidia`.
 
 ## B. Hardening / polish (after first green build)
 

@@ -6,7 +6,9 @@ packaged as a **live installer ISO** built by [titanoboa](https://github.com/ubl
 
 - **Owner:** Jon Marcum (GitHub `jrmarcum`)
 - **Repo:** https://github.com/jrmarcum/ub-cosmic
-- **Published image:** `ghcr.io/jrmarcum/ub-cosmic:latest`
+- **Published images:** `ghcr.io/jrmarcum/ub-cosmic:latest` (AMD/Intel) and
+  `ghcr.io/jrmarcum/ub-cosmic-nvidia:latest` (NVIDIA). One ISO (built from the AMD/Intel image)
+  first-boot-rebases NVIDIA machines automatically — see [decisions.md](decisions.md).
 
 ## How it works (the model, set 2026-07-13)
 
@@ -20,9 +22,9 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 
 | Path | Purpose |
 | --- | --- |
-| `Containerfile` | Entry point. `FROM ghcr.io/ublue-os/bazzite-gnome:stable`, runs the build script, `bootc container lint`. |
-| `build_files/build.sh` | All package installs / customizations. Installs the `cosmic-desktop` metapackage + COSMIC apps; keeps GDM so COSMIC and GNOME are both selectable; installs + enables **greenboot** auto-rollback. |
-| `system_files/` | Tree copied to `/` during build. Holds the titanoboa ISO contract at `usr/lib/bootc-image-builder/iso.yaml` and the greenboot health check at `etc/greenboot/check/required.d/50-graphical-target.sh`. |
+| `Containerfile` | Entry point. Parametrized `ARG BASE_IMAGE` / `ARG IMAGE_VARIANT` so CI builds both GPU variants; runs the build script, `bootc container lint`. |
+| `build_files/build.sh` | All package installs / customizations. Installs `cosmic-desktop` + COSMIC apps; keeps GDM; installs + enables **greenboot** auto-rollback; enables the **first-boot GPU auto-rebase** service on the AMD/Intel variant only. |
+| `system_files/` | Tree copied to `/` during build. Holds the titanoboa ISO contract (`usr/lib/bootc-image-builder/iso.yaml`), the greenboot check (`etc/greenboot/check/required.d/50-graphical-target.sh`), and the GPU auto-rebase service + script (`usr/lib/systemd/system/ub-cosmic-gpu-rebase.service`, `usr/lib/ub-cosmic/gpu-rebase.sh`). |
 | `image-template.env` | Build vars (`IMAGE_NAME=ub-cosmic`, `REPO_ORGANIZATION=jrmarcum`). Sourced by the Justfile. |
 | `.github/workflows/build.yml` | Builds, signs (Cosign), and pushes the OCI image to GHCR. |
 | `.github/workflows/build-iso.yml` | Builds the live ISO via titanoboa; uploads ISO + checksum as artifacts. |
@@ -43,9 +45,9 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
   daily rebuild, and Renovate blocked from pinning the base. See [decisions.md](decisions.md).
 - **greenboot auto-rollback enabled by default** (build.sh + a custom graphical-target health check):
   a bad update self-heals. See [decisions.md](decisions.md).
-- **Open question — nvidia vs non-nvidia base** (raised 2026-07-13): the base is a build-time choice,
-  so GPU can't be auto-detected before base selection. Leaning toward building both `ub-cosmic`
-  (bazzite-gnome) and `ub-cosmic-nvidia` variants. Not yet decided — see [next-work.md](next-work.md).
+- **NVIDIA handled via two images + one ISO + first-boot auto-rebase** (decided 2026-07-13): build
+  `ub-cosmic` (AMD/Intel) and `ub-cosmic-nvidia` (nvidia-open) in a CI matrix; the single ISO installs
+  the AMD/Intel image, which rebases NVIDIA machines on first boot. See [decisions.md](decisions.md).
 - **Not yet done** (see [next-work.md](next-work.md)): create + add the Cosign `SIGNING_SECRET`,
   confirm Actions are enabled, run the image build, then run the titanoboa ISO build. No image or ISO
   has been built/published yet.

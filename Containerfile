@@ -9,14 +9,19 @@ FROM scratch AS ctx
 COPY build_files /
 COPY system_files /system_files
 
-# Base Image
-# bazzite-gnome keeps GNOME + GDM; :stable is the recommended channel.
-# Pin to a digest once you have a known-good build (see README "Pinning").
-FROM ghcr.io/ublue-os/bazzite-gnome:stable
-## Other possible base images include:
-# FROM ghcr.io/ublue-os/bazzite:stable          # KDE instead of GNOME backup
-# FROM ghcr.io/ublue-os/bazzite-gnome:testing   # bleeding edge
-# Universal Blue Images: https://github.com/orgs/ublue-os/packages
+# Base Image (parametrized)
+# The base is a build ARG so CI can build BOTH variants from this one Containerfile:
+#   - ub-cosmic         → ghcr.io/ublue-os/bazzite-gnome:stable            (AMD/Intel)
+#   - ub-cosmic-nvidia  → ghcr.io/ublue-os/bazzite-gnome-nvidia-open:stable (NVIDIA)
+# Both keep GNOME + GDM; :stable is a FLOATING tag so daily rebuilds auto-track
+# upstream (see cmem/decisions.md — do NOT pin to a digest).
+ARG BASE_IMAGE="ghcr.io/ublue-os/bazzite-gnome:stable"
+FROM ${BASE_IMAGE}
+# Universal Blue images: https://github.com/orgs/ublue-os/packages
+
+# Which variant is being built: "base" (AMD/Intel) or "nvidia". build.sh reads this
+# to decide whether to install the first-boot GPU auto-rebase service (base only).
+ARG IMAGE_VARIANT="base"
 
 ### MODIFICATIONS
 ## All package installs and customizations live in build_files/build.sh.
@@ -24,7 +29,7 @@ RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
     --mount=type=cache,dst=/var/log \
     --mount=type=tmpfs,dst=/tmp \
-    /ctx/build.sh
+    IMAGE_VARIANT="${IMAGE_VARIANT}" /ctx/build.sh
 
 ### LINTING
 ## Verify final image and contents are correct.

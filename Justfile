@@ -8,6 +8,10 @@ export image_keywords := env_var("IMAGE_KEYWORDS")
 export image_logo_url := env_var("IMAGE_LOGO_URL")
 export default_tag := env_var("DEFAULT_TAG")
 export bib_image := env_var("BIB_IMAGE")
+# Base image + variant are env-overridable so CI can build both the AMD/Intel and
+# NVIDIA images from one Containerfile. Local builds default to the AMD/Intel base.
+export base_image := env_var_or_default("BASE_IMAGE", "ghcr.io/ublue-os/bazzite-gnome:stable")
+export image_variant := env_var_or_default("IMAGE_VARIANT", "base")
 
 alias build-vm := build-qcow2
 alias rebuild-vm := rebuild-qcow2
@@ -99,6 +103,8 @@ build $target_image=image_name $tag=default_tag:
     set -euox pipefail
 
     BUILD_ARGS=()
+    BUILD_ARGS+=("--build-arg" "BASE_IMAGE={{ base_image }}")
+    BUILD_ARGS+=("--build-arg" "IMAGE_VARIANT={{ image_variant }}")
     LABELS=()
     if [[ -z "$(git status -s)" ]]; then
         GIT_SHA=$(git rev-parse --short HEAD)

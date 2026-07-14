@@ -2,12 +2,16 @@
 
 ## Two stages
 
-1. **Image build** (`.github/workflows/build.yml`) — builds the `Containerfile`, rechunks, tags,
-   **signs with Cosign**, and pushes to `ghcr.io/jrmarcum/ub-cosmic`. Triggers: push to `main`,
-   daily schedule (10:05 UTC), and manual dispatch. PRs build but do not push/sign.
-2. **Live ISO build** (`.github/workflows/build-iso.yml`) — manual dispatch. Consumes the pushed
-   image via the `ublue-os/titanoboa@main` action and uploads `ub-cosmic-<tag>.iso` + a
-   `-CHECKSUM` file as a workflow artifact (7-day retention).
+1. **Image build** (`.github/workflows/build.yml`) — a **matrix** builds BOTH GPU variants:
+   `ub-cosmic` (from `bazzite-gnome:stable`) and `ub-cosmic-nvidia` (from
+   `bazzite-gnome-nvidia-open:stable`). Each is rechunked, tagged, **signed with Cosign**, and pushed
+   to `ghcr.io/jrmarcum/<name>`. The matrix passes `BASE_IMAGE` + `IMAGE_VARIANT` (via `GITHUB_ENV`,
+   read by the Justfile/Containerfile build args). Triggers: push to `main`, daily schedule
+   (10:05 UTC), manual dispatch. PRs build but do not push/sign.
+2. **Live ISO build** (`.github/workflows/build-iso.yml`) — manual dispatch. Builds **one** ISO from
+   the **AMD/Intel** image (`ub-cosmic`) via `ublue-os/titanoboa@main`; uploads `ub-cosmic-<tag>.iso`
+   + a `-CHECKSUM` as an artifact (7-day retention). NVIDIA machines are handled by the first-boot
+   auto-rebase baked into that image — no separate NVIDIA ISO.
 
 **Order matters:** the ISO workflow needs the image to already exist in GHCR, so run *Build
 container image* successfully at least once before *Build live ISO (titanoboa)*.

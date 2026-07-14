@@ -1,0 +1,18 @@
+[Unit]
+Description=ub-cosmic: auto-select GPU image variant (rebase to NVIDIA if present)
+Documentation=https://github.com/jrmarcum/ub-cosmic
+# Needs network to pull the NVIDIA image; only meaningful before it has run once.
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/ub-cosmic/gpu-rebase.done
+# Don't fight a rollback in progress.
+ConditionKernelCommandLine=!ostree.rollback
+
+[Service]
+Type=oneshot
+ExecStart=/usr/lib/ub-cosmic/gpu-rebase.sh
+# The script may call `systemctl reboot`; that's expected on the NVIDIA path.
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target
