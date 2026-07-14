@@ -68,4 +68,5 @@ Report findings with `file:line` + severity, then fix the safe/clear ones and no
 - `README.md` — the **public, user-facing** doc (setup, build order, install). NOT project memory.
 - `LAYOUTS.md` — user-facing guide to the COSMIC desktop layouts + switcher/capture.
 - `BRICSCAD.md` — user-facing guide to running BricsCAD (baked deps, layering the RPM, GPU caveats).
+- `LICENSE` / `NOTICE` / `THIRD_PARTY.md` — Apache-2.0 + attribution + third-party/trademark notices.
 - `CLAUDE.md` — small git-tracked pointer to this folder; auto-loaded by Claude Code each session.

@@ -1,0 +1,28 @@
+ub-cosmic
+Copyright 2026 Jon Marcum and ub-cosmic contributors
+
+This product is licensed under the Apache License, Version 2.0 (see the LICENSE
+file). It is derived from the Universal Blue image template and builds upon other
+Apache-2.0 licensed works from the Universal Blue project.
+
+Derived work
+------------
+Portions of this repository — including the Containerfile, Justfile, the GitHub
+Actions workflows under .github/workflows/, the disk configuration under
+disk_config/, and the dependabot/renovate configuration — are based on:
+
+    Universal Blue image template
+    https://github.com/ublue-os/image-template
+    Copyright the Universal Blue contributors
+    Licensed under the Apache License, Version 2.0
+
+These files have been modified for this project (image name and base image,
+build matrix, ISO workflow, and additional customizations).
+
+Builds upon / references (Apache-2.0)
+-------------------------------------
+    Bazzite / Universal Blue base images  — https://github.com/ublue-os/bazzite
+    titanoboa ISO builder                 — https://github.com/ublue-os/titanoboa
+
+Third-party components, the licenses of software bundled into the built image,
+and trademark / non-endorsement notices are described in THIRD_PARTY.md.

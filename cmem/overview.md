@@ -27,6 +27,7 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 | `system_files/` | Tree copied to `/` during build. Holds the titanoboa ISO contract (`usr/lib/bootc-image-builder/iso.yaml`), the greenboot check, the GPU auto-rebase service + script, the **COSMIC layout switcher** (`usr/bin/ub-cosmic-layout`), and **COSMIC layout presets** (`usr/share/ub-cosmic/cosmic-layouts/<name>/`, captured from live sessions). |
 | `LAYOUTS.md` | Guide to the COSMIC desktop layouts + the capture workflow. |
 | `BRICSCAD.md` | How to run BricsCAD: what deps are baked, layering the RPM, GPU/Wayland caveats. |
+| `LICENSE` / `NOTICE` / `THIRD_PARTY.md` | Apache-2.0 license, attribution + modification statement, and full third-party/trademark notices. |
 | `image-template.env` | Build vars (`IMAGE_NAME=ub-cosmic`, `REPO_ORGANIZATION=jrmarcum`). Sourced by the Justfile. |
 | `.github/workflows/build.yml` | Builds, signs (Cosign), and pushes the OCI image to GHCR. |
 | `.github/workflows/build-iso.yml` | Builds the live ISO via titanoboa; uploads ISO + checksum as artifacts. |
@@ -57,6 +58,9 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
   [decisions.md](decisions.md) and LAYOUTS.md.
 - **BricsCAD-ready:** build.sh bakes BricsCAD V26 (Qt6) runtime deps; the app is user-layered. See
   [decisions.md](decisions.md) and BRICSCAD.md.
+- **License compliance:** Apache-2.0 (matches image-template) + `NOTICE` + `THIRD_PARTY.md`
+  (attribution, base-image/COSMIC-GPL notices, BricsCAD-not-bundled, trademark/non-endorsement).
+  See [decisions.md](decisions.md).
 - **Not yet done** (see [next-work.md](next-work.md)): create + add the Cosign `SIGNING_SECRET`,
   confirm Actions are enabled, run the (matrix) image build, then run the titanoboa ISO build. No
   image or ISO has been built/published yet.

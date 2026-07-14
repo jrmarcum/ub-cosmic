@@ -144,6 +144,27 @@ Owner wants BricsCAD to have the best chance of running. Facts + decisions:
   fallback. If the deps list ever needs trimming for size, the xcb-util family + Qt6 base are the
   must-keeps; gtk2/libpng12 are the first to drop.
 
+## Licensing & compliance posture (owner request 2026-07-13)
+
+- **Repo license = Apache-2.0** ([LICENSE](../LICENSE)) — correct, matches upstream `image-template`
+  (Apache-2.0) which the scaffolding derives from; also matches the `Apache-2.0` image label in the
+  Justfile. Don't change to a copyleft license without checking the derived image-template files.
+- **Apache §4 compliance:** added [NOTICE](../NOTICE) (attribution + a statement that the template
+  files were modified). Upstream image-template/titanoboa ship **no NOTICE file** and no filled
+  copyright holder, so nothing mandatory to carry over.
+- **[THIRD_PARTY.md](../THIRD_PARTY.md)** documents: derived source (image-template), build tooling/
+  actions (titanoboa, remove-unwanted-software, bootc-image-builder, cosign — all Apache-2.0/MIT),
+  the Bazzite (Apache-2.0)/Fedora base whose **bundled packages carry their own licenses inside the
+  image at `/usr/share/licenses/`**, COSMIC = **GPL-3.0**, and a **trademark/non-endorsement**
+  disclaimer (Universal Blue, Bazzite, Fedora, COSMIC/System76, BricsCAD/Bricsys, NVIDIA, Windows,
+  Zorin).
+- **BricsCAD is NOT bundled/redistributed** — only its open-source runtime deps are installed; the
+  name is used descriptively. Never commit BricsCAD binaries/assets to the repo or bake them into the
+  image.
+- **Verified facts (2026-07-13):** bazzite/titanoboa/image-template = Apache-2.0 (GitHub API);
+  cosmic-comp = GNU GPL. Not legal advice — commercial distribution warrants a real legal review,
+  especially trademarks and OS-image redistribution.
+
 ## ISO method: titanoboa (live), with BIB as fallback
 
 Owner chose the **titanoboa** live-ISO path (matches how upstream Bazzite builds ISOs) over

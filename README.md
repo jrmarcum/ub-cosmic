@@ -202,6 +202,17 @@ Manual rollback (`bootc rollback`, the GRUB previous entry, or Bazzite's `brh`) 
   ISO build fails, the BIB path (`build-disk.yml` in the upstream
   [image-template](https://github.com/ublue-os/image-template)) is a fallback.
 
+## License & attribution
+
+ub-cosmic is licensed under the **Apache License 2.0** ([LICENSE](LICENSE)), matching its upstream
+[ublue-os/image-template](https://github.com/ublue-os/image-template). Attribution and the
+modification statement are in [NOTICE](NOTICE); full third-party notices — build tooling, the
+Bazzite/Fedora base and its bundled-package licenses, COSMIC (GPL-3.0), and **trademark /
+non-endorsement** disclaimers — are in [THIRD_PARTY.md](THIRD_PARTY.md).
+
+**BricsCAD is not bundled** — it's proprietary; only its open-source runtime dependencies are
+installed. ub-cosmic is an independent, unofficial project and ships no upstream logos or branding.
+
 ## References
 
 - Universal Blue: https://universal-blue.org/
