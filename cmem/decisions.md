@@ -164,11 +164,12 @@ Owner wants BricsCAD to have the best chance of running. Facts + decisions:
 - **Verified facts (2026-07-13):** bazzite/titanoboa/image-template = Apache-2.0 (GitHub API);
   cosmic-comp = GNU GPL. Not legal advice — commercial distribution warrants a real legal review,
   especially trademarks and OS-image redistribution.
-- **Distribution intent (owner, 2026-07-13):** NOT planning commercial distribution at this time —
-  personal/self-use. Owner acknowledges a **legal review is warranted before any commercial or broad
-  public distribution** (trademarks, OS-image redistribution, BricsCAD-not-bundled). Treat that
-  review as a hard GATE if/when distribution scope changes; until then the current attribution +
-  disclaimers suffice.
+- **Distribution intent (owner, 2026-07-13):** **Public open-source distribution of this repo is
+  fine and expressly permitted by Apache-2.0** — no legal gate on sharing the source publicly. The
+  owner corrected an earlier overcautious note: "public distribution" is NOT a gate. A legal review
+  is warranted only before **COMMERCIAL** activity — selling, a commercial product, or distributing
+  built OS media under a brand (trademarks, OS-image redistribution, BricsCAD-not-bundled). Not
+  commercial at this time; the current attribution + disclaimers suffice for open-source use.
 
 ## ISO method: titanoboa (live), with BIB as fallback
 
