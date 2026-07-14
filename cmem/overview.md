@@ -38,7 +38,7 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 
 ## Current state (2026-07-13)
 
-- Scaffold complete and pushed to `main` (`main` tip `4116cc0`). An early divergence with a README
+- Scaffold complete and pushed to `main` (`main` tip `df4d281`). An early divergence with a README
   edit made on github.com was resolved by merge `a2ff811`.
 - All `CHANGE_ME`/`<you>` placeholders filled with `jrmarcum`.
 - **Portable memory system in place** (`cmem/` + tracked `CLAUDE.md` pointer, commit `33a7db7`); the
