@@ -65,7 +65,9 @@ Report findings with `file:line` + severity, then fix the safe/clear ones and no
 
 ## Related files outside cmem
 
-- `README.md` — the **public, user-facing** doc (setup, build order, install). NOT project memory.
+- `README.md` — the **public, end-user-facing** doc (what the distro is, features/benefits, basis,
+  install & everyday use). NOT project memory, NOT maintainer docs.
+- `BUILDING.md` — the **maintainer/developer** guide (CI, Cosign, build order, matrix, customizing).
 - `LAYOUTS.md` — user-facing guide to the COSMIC desktop layouts + switcher/capture.
 - `BRICSCAD.md` — user-facing guide to running BricsCAD (baked deps, layering the RPM, GPU caveats).
 - `LICENSE` / `NOTICE` / `THIRD_PARTY.md` — Apache-2.0 + attribution + third-party/trademark notices.

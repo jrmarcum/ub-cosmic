@@ -25,6 +25,8 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 | `Containerfile` | Entry point. Parametrized `ARG BASE_IMAGE` / `ARG IMAGE_VARIANT` so CI builds both GPU variants; runs the build script, `bootc container lint`. |
 | `build_files/build.sh` | All package installs / customizations. Installs the **COSMIC session packages** (explicit list — no `cosmic-desktop` metapackage) + apps; keeps GDM; installs + enables **greenboot** auto-rollback; enables the **first-boot GPU auto-rebase** service on the AMD/Intel variant only; bakes **BricsCAD V26 (Qt6) runtime deps**. |
 | `system_files/` | Tree copied to `/` during build. Holds the titanoboa ISO contract (`usr/lib/bootc-image-builder/iso.yaml`), the greenboot check, the GPU auto-rebase service + script, the **COSMIC layout switcher** (`usr/bin/ub-cosmic-layout`), and **COSMIC layout presets** (`usr/share/ub-cosmic/cosmic-layouts/<name>/`, captured from live sessions). |
+| `README.md` | **End-user-facing** — what the distro is, features/benefits, basis, install & everyday use. NOT maintainer docs. |
+| `BUILDING.md` | **Maintainer/dev guide** — CI, Cosign setup, build order, matrix/GPU, auto-updates, customizing, local dev. |
 | `LAYOUTS.md` | Guide to the COSMIC desktop layouts + the capture workflow. |
 | `BRICSCAD.md` | How to run BricsCAD: what deps are baked, layering the RPM, GPU/Wayland caveats. |
 | `LICENSE` / `NOTICE` / `THIRD_PARTY.md` | Apache-2.0 license, attribution + modification statement, and full third-party/trademark notices. |
