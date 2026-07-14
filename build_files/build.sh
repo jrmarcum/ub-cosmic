@@ -16,22 +16,39 @@ IMAGE_VARIANT="${IMAGE_VARIANT:-base}"
 cp -avf "/ctx/system_files"/. /
 
 ### COSMIC desktop ----------------------------------------------------------
-# The COSMIC desktop environment ships in Fedora's repos (F41+). Installing the
-# `cosmic-desktop` metapackage pulls the full DE (cosmic-session, cosmic-comp,
-# cosmic-settings, cosmic-files, etc.).
+# COSMIC ships in Fedora's repos (F41+), but there is NO `cosmic-desktop`
+# metapackage — install the session components explicitly (all verified present
+# in the Fedora 44 base).
 #
-# We deliberately do NOT enable cosmic-greeter — bazzite-gnome's GDM stays the
-# display manager and will list both COSMIC and GNOME as sessions, giving you a
-# COSMIC-first setup with GNOME as a reliable fallback.
-dnf5 install -y cosmic-desktop
+# We deliberately do NOT install/enable cosmic-greeter — bazzite-gnome's GDM stays
+# the display manager and lists both COSMIC and GNOME as sessions (COSMIC-first
+# with GNOME as a reliable fallback).
+dnf5 install -y \
+    cosmic-session \
+    cosmic-comp \
+    cosmic-panel \
+    cosmic-applets \
+    cosmic-bg \
+    cosmic-launcher \
+    cosmic-settings \
+    cosmic-settings-daemon \
+    cosmic-osd \
+    cosmic-notifications \
+    cosmic-app-library \
+    cosmic-files \
+    cosmic-randr \
+    cosmic-idle \
+    cosmic-wallpapers \
+    cosmic-initial-setup \
+    xdg-desktop-portal-cosmic
 
-# A few quality-of-life COSMIC extras (comment out any you don't want):
+# A few quality-of-life COSMIC apps (guarded so an odd name never fails the build).
 dnf5 install -y \
     cosmic-store \
-    cosmic-terminal \
+    cosmic-term \
     cosmic-edit \
     cosmic-screenshot \
-    cosmic-wallpapers || true
+    cosmic-player || true
 
 ### Session selection -------------------------------------------------------
 # We keep GDM (from bazzite-gnome) as the display manager. It lists every

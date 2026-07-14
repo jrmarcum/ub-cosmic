@@ -90,8 +90,9 @@ At the GDM login screen, click the gear/session icon and choose **COSMIC** or **
   (e.g. `bazzite:stable` for a KDE backup instead of GNOME).
 
 ### Making GNOME the default instead of COSMIC
-Remove the `cosmic-desktop` default-session block in `build.sh`, or simply leave
-session selection to the user — GDM remembers each user's last choice.
+Session selection is left to the user — GDM lists both and remembers each user's last
+choice. To bias new users toward one session you'd ship a GDM/AccountsService default
+(intentionally not done; fragile on atomic).
 
 ---
 

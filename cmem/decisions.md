@@ -9,11 +9,15 @@ GDM lists every installed session, so COSMIC and GNOME both appear at login. Swi
 `bazzite` would give a KDE backup instead — change the `FROM` in `Containerfile` if that's ever
 desired.
 
-## COSMIC layered via the `cosmic-desktop` metapackage
+## COSMIC layered via an explicit session package list (NO metapackage)
 
-COSMIC is installed in `build_files/build.sh` with `dnf5 install -y cosmic-desktop` (plus optional
-apps: cosmic-store/terminal/edit/screenshot/wallpapers). COSMIC is in Fedora's repos since F41; the
-metapackage pulls the whole DE. Alternative is the group `@cosmic-desktop-environment` — equivalent.
+COSMIC is installed in `build_files/build.sh` by an **explicit list** (cosmic-session, -comp, -panel,
+-applets, -bg, -launcher, -settings(-daemon), -osd, -notifications, -app-library, -files, -randr,
+-idle, -wallpapers, -initial-setup, xdg-desktop-portal-cosmic) plus optional apps
+(cosmic-store/term/edit/screenshot/player). **There is NO `cosmic-desktop` metapackage** — an earlier
+version assumed one and the build failed with "No match for argument: cosmic-desktop" (2026-07-13).
+All package names were verified against the **Fedora 44** base (Bazzite's current Fedora) before use;
+re-verify names on a major Fedora bump. COSMIC has been in Fedora since F41.
 
 ## Keep GDM; do NOT enable cosmic-greeter
 
