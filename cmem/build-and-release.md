@@ -12,6 +12,21 @@
 **Order matters:** the ISO workflow needs the image to already exist in GHCR, so run *Build
 container image* successfully at least once before *Build live ISO (titanoboa)*.
 
+## Automatic upstream updates (how new Bazzite/UB reaches users)
+
+This is the intended, owner-chosen model (full rationale in [decisions.md](decisions.md) §
+"Automatic upstream updates"):
+
+- The `Containerfile` base is a **floating tag** (`bazzite-gnome:stable`), so each build pulls the
+  newest upstream base and the newest Fedora COSMIC packages.
+- The **daily `cron` in `build.yml`** rebuilds and republishes `ghcr.io/jrmarcum/ub-cosmic:latest`
+  every day — this is the mechanism that folds upstream fixes into our image with no manual step.
+- **Installed machines** auto-update from *our* image (Bazzite's inherited updater), not from
+  `bazzite-gnome` directly — so upstream reaches them only after the daily rebuild republishes.
+- **Renovate must NOT pin the base digest** (`.github/renovate.json5` has a `dockerfile`-manager rule
+  disabling `pin`/`pinDigest`/`digest`). `config:best-practices` would otherwise pin + auto-merge a
+  `@sha256` digest and silently freeze updates. GitHub Actions stay SHA-pinned.
+
 ## Required secret: Cosign signing key
 
 Image builds **fail without it** (Universal Blue signs all images). One-time:
