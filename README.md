@@ -13,7 +13,7 @@ ISO** is produced with [titanoboa](https://github.com/ublue-os/titanoboa).
 
 | Artifact | How | Where |
 | --- | --- | --- |
-| OCI image `ghcr.io/<you>/ub-cosmic:latest` | `.github/workflows/build.yml` | GitHub Container Registry |
+| OCI image `ghcr.io/jrmarcum/ub-cosmic:latest` | `.github/workflows/build.yml` | GitHub Container Registry |
 | Live installer ISO | `.github/workflows/build-iso.yml` (titanoboa) | Workflow run **Artifacts** |
 
 **Base:** `ghcr.io/ublue-os/bazzite-gnome:stable` — GDM stays the display manager, so
@@ -28,9 +28,9 @@ last choice; the live ISO's boot menu defaults to the COSMIC entry.
    if you publish it as a template).
 
 2. **Set your identity** in [`image-template.env`](./image-template.env):
-   - `REPO_ORGANIZATION="CHANGE_ME"` → your GitHub username/org.
+   - `REPO_ORGANIZATION` is already set to `jrmarcum` (your GitHub username).
    - Also update the image ref in [`disk_config/iso.toml`](./disk_config/iso.toml)
-     (`ghcr.io/CHANGE_ME/ub-cosmic:latest`) if you plan to build ISOs locally.
+     `disk_config/iso.toml` already points at `ghcr.io/jrmarcum/ub-cosmic:latest` for local ISO builds.
 
 3. **Create a Cosign signing key** (image builds fail without it):
    ```bash
@@ -47,7 +47,7 @@ last choice; the live ISO's boot menu defaults to the COSMIC entry.
 ## Build order
 
 1. **Build & push the image.** Push to `main` (or run *Build container image*
-   manually). This publishes `ghcr.io/<you>/ub-cosmic:latest`.
+   manually). This publishes `ghcr.io/jrmarcum/ub-cosmic:latest`.
    - First run is slow; COSMIC adds a few hundred MB on top of Bazzite.
 
 2. **Build the ISO.** Once the image exists, run the **Build live ISO (titanoboa)**
@@ -66,7 +66,7 @@ If you already run a bootc system (Bazzite, Bluefin, Fedora Atomic…), you can
 switch to this image without the ISO:
 
 ```bash
-sudo bootc switch ghcr.io/<you>/ub-cosmic:latest
+sudo bootc switch ghcr.io/jrmarcum/ub-cosmic:latest
 systemctl reboot
 ```
 

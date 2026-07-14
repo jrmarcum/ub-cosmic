@@ -7,7 +7,7 @@
 [customizations.installer.kickstart]
 contents = """
 %post
-bootc switch --mutate-in-place --transport registry ghcr.io/CHANGE_ME/ub-cosmic:latest
+bootc switch --mutate-in-place --transport registry ghcr.io/jrmarcum/ub-cosmic:latest
 %end
 """
 
