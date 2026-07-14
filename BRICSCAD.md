@@ -17,7 +17,7 @@ BricsCAD **V26 is Qt 6.8-based** (older versions were GTK), so the image ships:
 - **X11 libs:** `libSM`, `libICE`, `libXi`, `libXtst`, `libXrandr`, `libXmu`, `libXScrnSaver`
 - **3D / OpenGL:** `mesa-libGLU` (plus the base image's `mesa-libGL` / DRI drivers)
 - **Fonts / misc:** `fontconfig`, `freetype`, `libdeflate`, `hicolor-icon-theme`
-- **Licensing/network:** `openssl-libs`, `libcurl`
+- **Licensing/network:** `openssl-libs` (the base's `libcurl-minimal` already provides `libcurl.so`)
 - **Legacy GTK2 compat:** `gtk2`, `libpng12` — belt-and-suspenders for the RPM's older `Requires`
 
 ## Installing BricsCAD
@@ -30,7 +30,9 @@ BricsCAD **V26 is Qt 6.8-based** (older versions were GTK), so the image ships:
    rpm-ostree install ~/Downloads/BricsCAD-V26*.x86_64.rpm
    systemctl reboot
    ```
-   The baked dependencies above should let this resolve cleanly.
+   The baked dependencies above should let this resolve cleanly. If the RPM insists on the full
+   `libcurl` (the base ships `libcurl-minimal`), add `--allowerasing`:
+   `rpm-ostree install --allowerasing ~/Downloads/BricsCAD-V26*.x86_64.rpm`.
 3. Launch BricsCAD from the app grid and activate your license (needs network).
 
 > **Updates note:** a layered package persists across ub-cosmic's image updates, but you update

@@ -161,8 +161,10 @@ dnf5 install -y \
     fontconfig \
     freetype \
     openssl-libs \
-    libcurl \
     hicolor-icon-theme
+# NOTE: do NOT install `libcurl` — the base ships `libcurl-minimal`, which provides
+# libcurl.so.4 (with HTTPS). Adding full `libcurl` conflicts (both provide
+# libcurl(x86-64)) and fails the build.
 # Legacy GTK2 compat — V26 is Qt, but the RPM historically still Requires these;
 # harmless belt-and-suspenders so `dnf install BricsCAD*.rpm` never blocks on them.
 dnf5 install -y gtk2 libpng12
