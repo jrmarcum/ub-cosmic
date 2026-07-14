@@ -37,7 +37,7 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 
 ## Current state (2026-07-13)
 
-- Scaffold complete and pushed to `main` (`main` tip `923ab8e`). An early divergence with a README
+- Scaffold complete and pushed to `main` (`main` tip `4116cc0`). An early divergence with a README
   edit made on github.com was resolved by merge `a2ff811`.
 - All `CHANGE_ME`/`<you>` placeholders filled with `jrmarcum`.
 - **Portable memory system in place** (`cmem/` + tracked `CLAUDE.md` pointer, commit `33a7db7`); the
@@ -49,9 +49,10 @@ and [decisions.md](decisions.md) § "Automatic upstream updates".
 - **NVIDIA handled via two images + one ISO + first-boot auto-rebase** (commit `923ab8e`): a CI matrix
   builds `ub-cosmic` (AMD/Intel) and `ub-cosmic-nvidia` (nvidia-open); the single ISO installs the
   AMD/Intel image, which rebases NVIDIA machines on first boot. See [decisions.md](decisions.md).
-- **COSMIC desktop layouts** (Windows-like default) via `ub-cosmic-layout` file-tree switcher.
-  Framework complete; **preset content must be captured on a live COSMIC session** (empty until then).
-  ~4–6 approximations, not 12 (COSMIC limits). Earlier GNOME-based version was removed. See
+- **COSMIC desktop layouts** (Windows-like default) via `ub-cosmic-layout` file-tree switcher
+  (commit `4116cc0`). Framework complete but **0 of 6 intended presets have content** — the only file
+  under `cosmic-layouts/` is the README; content must be captured on a live COSMIC session. ~4–6
+  approximations, not 12 (COSMIC limits). Earlier GNOME-based version was removed. See
   [decisions.md](decisions.md) and LAYOUTS.md.
 - **Not yet done** (see [next-work.md](next-work.md)): create + add the Cosign `SIGNING_SECRET`,
   confirm Actions are enabled, run the (matrix) image build, then run the titanoboa ISO build. No
