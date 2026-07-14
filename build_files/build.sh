@@ -189,3 +189,6 @@ rm -rf \
     /tmp/* \
     /run/* \
     2>/dev/null || true
+# greetd ships a baked ~/.config in /var (portal-mask) that trips var-tmpfiles lint.
+# We use GDM (greetd is only a pulled dep and never runs), so drop it.
+rm -rf /var/lib/greetd/.config 2>/dev/null || true
