@@ -24,5 +24,13 @@ Builds upon / references (Apache-2.0)
     Bazzite / Universal Blue base images  — https://github.com/ublue-os/bazzite
     titanoboa ISO builder                 — https://github.com/ublue-os/titanoboa
 
+Brand assets are RESERVED
+--------------------------
+The ub-cosmic logo and brand assets — including UB-COSMIC-Linux.png — are
+Copyright 2026 Jon Marcum, ALL RIGHTS RESERVED. They are NOT licensed under the
+Apache License 2.0 that covers the rest of this repository, and no permission to
+use them is granted. This is a dual-licensed repository: Apache-2.0 for the code,
+reserved/proprietary for the brand. See THIRD_PARTY.md § 7.
+
 Third-party components, the licenses of software bundled into the built image,
 and trademark / non-endorsement notices are described in THIRD_PARTY.md.

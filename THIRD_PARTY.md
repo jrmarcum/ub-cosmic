@@ -80,3 +80,19 @@ indicate compatibility or lineage:
 All trademarks are the property of their respective owners. This project ships **none** of
 their logos or branding. If any trademark holder objects to a descriptive use (including the
 project name), it will be changed on request.
+
+### Project brand assets — ALL RIGHTS RESERVED (not open source)
+
+The ub-cosmic logo and brand assets — including **`UB-COSMIC-Linux.png`** — are
+**© 2026 Jon Marcum, all rights reserved,** and are asserted as a **trademark** of the
+project. They are **NOT** licensed under the Apache License 2.0 that covers the rest of this
+repository, and **no license to use them is granted.** You may **not** copy, modify,
+redistribute, or use these assets — including in a fork or derivative image, and including
+any **commercial use such as merchandise (apparel, stickers, prints, etc.)** — without the
+owner's prior written permission. **The owner reserves all rights to commercialize the mark;
+any third-party commercial or merchandise use requires a separate written license from the
+owner.** (Apache-2.0 §6 grants no trademark rights.)
+
+> Because this is a public repository the image file is technically downloadable, but that
+> does **not** grant any right to use it. To make brand assets un-downloadable they would
+> have to be kept out of the public repository entirely.

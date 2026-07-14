@@ -214,6 +214,10 @@ non-endorsement** disclaimers — are in [THIRD_PARTY.md](THIRD_PARTY.md).
 **BricsCAD is not bundled** — it's proprietary; only its open-source runtime dependencies are
 installed. ub-cosmic is an independent, unofficial project and ships no upstream logos or branding.
 
+**Dual-licensed:** the **code** is Apache-2.0, but the **project logo/brand** (`UB-COSMIC-Linux.png`)
+is **© 2026 Jon Marcum, all rights reserved** — *not* under Apache-2.0 and not available for reuse
+(see [THIRD_PARTY.md](THIRD_PARTY.md#7-trademarks--non-endorsement)).
+
 ## References
 
 - Universal Blue: https://universal-blue.org/
